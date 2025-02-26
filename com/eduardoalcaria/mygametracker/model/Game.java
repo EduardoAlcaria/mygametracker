@@ -1,19 +1,32 @@
 package com.eduardoalcaria.mygametracker.model;
 
+
+import com.eduardoalcaria.mygametracker.DAO.ConnectionDAO;
+
+import java.sql.*;
+import java.time.LocalDate;
+
 public class Game {
     private String gameName;
-    private String gameGender;
-    private int startPlayingOn;
-    private int finishedPlayingOn;
+    private String gameGenre;
+    private String status;
+    private LocalDate startPlayingOn;
+    private LocalDate finishedPlayingOn;
 
-    public void print(){
+    public void print() {
         System.out.println("Title: " + this.gameName);
-        System.out.println("Gen: " + this.gameGender);
+        System.out.println("Gen: " + this.gameGenre);
+        System.out.println("Status: " + this.status);
+        System.out.println("Start Playing on: " + this.startPlayingOn);
+        System.out.println("Finished Playing on: " + this.finishedPlayingOn);
     }
 
-    public Game(String gameName, String gameGender) {
-        this.gameName = gameName;
-        this.gameGender = gameGender;
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public String getGameName() {
@@ -24,27 +37,28 @@ public class Game {
         this.gameName = gameName;
     }
 
-    public String getGameGender() {
-        return gameGender;
+    public String getGameGenre() {
+        return gameGenre;
     }
 
-    public void setGameGender(String gameGender) {
-        this.gameGender = gameGender;
+    public void setGameGenre(String gameGenre) {
+        this.gameGenre = gameGenre;
     }
 
-    public int getStartPlayingOn() {
+    public LocalDate getStartPlayingOn() {
         return startPlayingOn;
     }
 
-    public void setStartPlayingOn(int startPlayingOn) {
+    public void setStartPlayingOn(LocalDate startPlayingOn) {
         this.startPlayingOn = startPlayingOn;
     }
 
-    public int getFinishedPlayingOn() {
+    public LocalDate getFinishedPlayingOn() {
         return finishedPlayingOn;
     }
 
-    public void setFinishedPlayingOn(int finishedPlayingOn) {
+    public void setFinishedPlayingOn(LocalDate finishedPlayingOn) {
         this.finishedPlayingOn = finishedPlayingOn;
     }
 }
+

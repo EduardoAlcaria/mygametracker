@@ -1,9 +1,7 @@
-package com.eduardoalcaria.mygametracker.database;
+package com.eduardoalcaria.mygametracker.DAO;
 
 import javax.swing.*;
-import java.sql.DriverManager;
-import java.sql.Connection;
-import java.sql.SQLException;
+import java.sql.*;
 
 
 public class ConnectionDAO {
@@ -14,12 +12,14 @@ public class ConnectionDAO {
 
             String url = "jdbc:mysql://localhost:3306/mygametracker_localhost?user=root&password=";
             conn = DriverManager.getConnection(url);
+
             JOptionPane.showMessageDialog(null, "Connection Successful");
+
 
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, e.getMessage());
         }
-
         return conn;
     }
+
 }
