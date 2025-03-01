@@ -1,17 +1,13 @@
 package com.eduardoalcaria.mygametracker.model;
 
-
-import com.eduardoalcaria.mygametracker.DAO.ConnectionDAO;
-
 import java.sql.*;
-import java.time.LocalDate;
 
 public class Game {
     private String gameName;
     private String gameGenre;
     private String status;
-    private LocalDate startPlayingOn;
-    private LocalDate finishedPlayingOn;
+    private Date startPlayingOn;
+    private Date finishedPlayingOn;
 
     public void print() {
         System.out.println("Title: " + this.gameName);
@@ -45,19 +41,19 @@ public class Game {
         this.gameGenre = gameGenre;
     }
 
-    public LocalDate getStartPlayingOn() {
+    public Date getStartPlayingOn() {
         return startPlayingOn;
     }
 
-    public void setStartPlayingOn(LocalDate startPlayingOn) {
+    public void setStartPlayingOn(Date startPlayingOn) {
         this.startPlayingOn = startPlayingOn;
     }
 
-    public LocalDate getFinishedPlayingOn() {
+    public Date getFinishedPlayingOn() {
         return finishedPlayingOn;
     }
 
-    public void setFinishedPlayingOn(LocalDate finishedPlayingOn) {
+    public void setFinishedPlayingOn(Date finishedPlayingOn) {
         this.finishedPlayingOn = finishedPlayingOn;
     }
 }
