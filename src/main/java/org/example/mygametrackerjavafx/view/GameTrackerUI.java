@@ -18,6 +18,7 @@ public class GameTrackerUI extends Application {
     @Override
     public void start(Stage primaryStage) {
         primaryStage.setTitle("Game Tracker");
+        InsertGames insertGames = new InsertGames();
 
         Text text = new Text("My Game Tracker V:0.0.1");
         text.setFont(Font.font("Arial", 20)); // Set font and size
