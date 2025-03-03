@@ -6,8 +6,11 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="myGameTrackerJavaFX" />
+        <module name="mygametracker" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="myGameTrackerJavaFX" target="23" />
+    </bytecodeTargetLevel>
   </component>
 </project>

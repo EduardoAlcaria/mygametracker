@@ -49,6 +49,7 @@ public class GameTrackerUI extends Application {
 
         showGamesButton.setOnAction(e -> {
             System.out.println("Showing games...");
+
         });
 
         Scene scene = new Scene(layout, 400, 300);
