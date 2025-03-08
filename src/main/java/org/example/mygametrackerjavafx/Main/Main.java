@@ -1,7 +1,7 @@
-package org.example.mygametrackerjavafx.main;
+package org.example.mygametrackerjavafx.Main;
 
 import org.example.mygametrackerjavafx.connectionDAO.InsertGames;
-import org.example.mygametrackerjavafx.model.Game;
+import org.example.mygametrackerjavafx.Model.Game;
 
 import java.sql.*;
 import java.time.LocalDate;
@@ -9,13 +9,26 @@ import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 import java.util.Scanner;
 
+import static org.example.mygametrackerjavafx.ProcessTracker.ProcessTracker.isGameRunning;
+
 
 public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
+
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
         Game game1 = new Game();
+
         InsertGames insertGames = new InsertGames();
+
+        String gameNameProcess = "Opera GX";
+
+        if (isGameRunning(gameNameProcess)){
+            System.out.println("the game is running: " + gameNameProcess);
+        }else{
+            System.out.println("the game is not running");
+        }
 
         while (true) {
             System.out.println("1 for register a game");

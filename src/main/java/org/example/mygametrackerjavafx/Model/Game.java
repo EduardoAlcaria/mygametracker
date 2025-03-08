@@ -1,4 +1,4 @@
-package org.example.mygametrackerjavafx.model;
+package org.example.mygametrackerjavafx.Model;
 
 import java.sql.Date;
 

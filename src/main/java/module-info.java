@@ -13,6 +13,6 @@ module org.example.mygametrackerjavafx {
     requires java.sql;
 
     opens org.example.mygametrackerjavafx to javafx.fxml;
-    exports org.example.mygametrackerjavafx.view;
-    opens org.example.mygametrackerjavafx.view to javafx.fxml;
+    exports org.example.mygametrackerjavafx.View;
+    opens org.example.mygametrackerjavafx.View to javafx.fxml;
 }

@@ -1,23 +1,20 @@
-package org.example.mygametrackerjavafx.view;
+package org.example.mygametrackerjavafx.View;
 
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.chart.PieChart;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import org.example.mygametrackerjavafx.connectionDAO.ConnectionDAO;
 import org.example.mygametrackerjavafx.connectionDAO.InsertGames;
-import org.example.mygametrackerjavafx.model.Game;
 
 public class GameTrackerUI extends Application {
     @Override
     public void start(Stage primaryStage) {
-        primaryStage.setTitle("Game Tracker");
+        primaryStage.setTitle("mygametracker");
         InsertGames insertGames = new InsertGames();
 
         Text text = new Text("My Game Tracker V:0.0.1");
