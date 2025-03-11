@@ -1,5 +1,7 @@
 package org.example.mygametrackerjavafx.Main;
 
+import com.sun.jna.ptr.IntByReference;
+import org.example.mygametrackerjavafx.ProcessTracker.ProcessTracker;
 import org.example.mygametrackerjavafx.connectionDAO.InsertGames;
 import org.example.mygametrackerjavafx.Model.Game;
 
@@ -9,7 +11,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 import java.util.Scanner;
 
-import static org.example.mygametrackerjavafx.ProcessTracker.ProcessTracker.isGameRunning;
 
 
 public class Main {
@@ -21,14 +22,6 @@ public class Main {
         Game game1 = new Game();
 
         InsertGames insertGames = new InsertGames();
-
-        String gameNameProcess = "Opera GX";
-
-        if (isGameRunning(gameNameProcess)){
-            System.out.println("the game is running: " + gameNameProcess);
-        }else{
-            System.out.println("the game is not running");
-        }
 
         while (true) {
             System.out.println("1 for register a game");

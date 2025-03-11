@@ -11,6 +11,9 @@ module org.example.mygametrackerjavafx {
     requires eu.hansolo.tilesfx;
     requires com.almasb.fxgl.all;
     requires java.sql;
+    requires com.sun.jna;
+    requires java.desktop;
+    requires com.sun.jna.platform;
 
     opens org.example.mygametrackerjavafx to javafx.fxml;
     exports org.example.mygametrackerjavafx.View;
