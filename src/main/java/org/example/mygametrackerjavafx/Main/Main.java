@@ -1,6 +1,5 @@
 package org.example.mygametrackerjavafx.Main;
 
-import com.sun.jna.ptr.IntByReference;
 import org.example.mygametrackerjavafx.ProcessTracker.ProcessTracker;
 import org.example.mygametrackerjavafx.connectionDAO.InsertGames;
 import org.example.mygametrackerjavafx.Model.Game;
@@ -10,7 +9,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 import java.util.Scanner;
-
 
 
 public class Main {
@@ -23,7 +21,10 @@ public class Main {
 
         InsertGames insertGames = new InsertGames();
 
+        ProcessTracker processTracker = new ProcessTracker();
+
         while (true) {
+            processTracker.Check();
             System.out.println("1 for register a game");
             System.out.println("2 for see the games");
             System.out.println("3 to exit");
@@ -106,6 +107,7 @@ public class Main {
         }
         scanner.close();
     }
+
     public static char charVerification(char character) {
         if (character != 'y' && character != 'n') {
             do {

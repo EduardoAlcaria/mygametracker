@@ -9,5 +9,6 @@ public interface PsapiCustom extends com.sun.jna.Library {
     PsapiCustom INSTANCE = Native.load("Psapi", PsapiCustom.class, W32APIOptions.UNICODE_OPTIONS);
 
     int GetModuleBaseNameW(WinNT.HANDLE hProcess, WinDef.HMODULE hModule, char[] lpBaseName, int size);
+
     boolean EnumProcesses(int[] pProcessIds, int cb, WinDef.DWORDByReference pBytesReturned);
 }

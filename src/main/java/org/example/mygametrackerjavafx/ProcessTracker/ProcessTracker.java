@@ -4,10 +4,9 @@ import com.sun.jna.Native;
 import com.sun.jna.platform.win32.Kernel32;
 import com.sun.jna.platform.win32.WinNT;
 import com.sun.jna.platform.win32.WinDef;
-import com.sun.jna.ptr.IntByReference;
 
 public class ProcessTracker {
-    public static void main(String[] args) {
+    public void Check() {
         Kernel32 kernel32 = Kernel32.INSTANCE;
         PsapiCustom psapi = PsapiCustom.INSTANCE;
 
