@@ -28,5 +28,10 @@ def scrapper():
     game_titles = bs.find_all("div", {"class": "col search_name ellipsis"})
     title_verified = title_verifier_via_steam(game_titles)
     if title_verified:
-        print(f"{title_verified}\nsteam")
+        print(f"{title_verified}")
+        print("steam")
+    else:
+        title_verified = False
+        print(f"{title_verified}")
+        print("steam")
 scrapper()
