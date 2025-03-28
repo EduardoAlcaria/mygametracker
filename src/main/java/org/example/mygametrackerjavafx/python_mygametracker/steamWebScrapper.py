@@ -1,8 +1,6 @@
 from selenium import webdriver
-
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
-
 import sys
 
 options = webdriver.ChromeOptions()
