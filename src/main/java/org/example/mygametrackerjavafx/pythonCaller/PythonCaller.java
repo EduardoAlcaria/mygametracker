@@ -11,7 +11,7 @@ public class PythonCaller {
         try {
             ProcessBuilder processBuilder = new ProcessBuilder("python",
                     System.getProperty("user.dir") + "\\src\\main\\java\\org\\example\\mygametrackerjavafx\\python_mygametracker\\steamWebScrapper.py",
-                    "msgv2");
+                    "cyberpunk 2077");
             Process process = processBuilder.start();
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
