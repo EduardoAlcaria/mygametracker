@@ -1,6 +1,6 @@
 package org.example.mygametrackerjavafx.Main;
 
-import org.example.mygametrackerjavafx.ProcessTracker.ProcessTracker;
+import org.example.mygametrackerjavafx.ProcessTracker.ProcessMonitor;
 import org.example.mygametrackerjavafx.connectionDAO.InsertGames;
 import org.example.mygametrackerjavafx.Model.Game;
 
@@ -12,7 +12,7 @@ import java.util.Scanner;
 
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         Scanner scanner = new Scanner(System.in);
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
@@ -21,10 +21,9 @@ public class Main {
 
         InsertGames insertGames = new InsertGames();
 
-        ProcessTracker processTracker = new ProcessTracker();
-
+        ProcessMonitor processMonitor = new ProcessMonitor();
+        processMonitor.isMonitoring();
         while (true) {
-            processTracker.Check();
             System.out.println("1 for register a game");
             System.out.println("2 for see the games");
             System.out.println("3 to exit");
