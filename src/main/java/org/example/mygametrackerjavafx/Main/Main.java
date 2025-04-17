@@ -1,6 +1,5 @@
 package org.example.mygametrackerjavafx.Main;
 
-import org.example.mygametrackerjavafx.ProcessTracker.ProcessMonitor;
 import org.example.mygametrackerjavafx.connectionDAO.InsertGames;
 import org.example.mygametrackerjavafx.Model.Game;
 
@@ -21,8 +20,6 @@ public class Main {
 
         InsertGames insertGames = new InsertGames();
 
-        ProcessMonitor processMonitor = new ProcessMonitor();
-        processMonitor.isMonitoring();
         while (true) {
             System.out.println("1 for register a game");
             System.out.println("2 for see the games");
