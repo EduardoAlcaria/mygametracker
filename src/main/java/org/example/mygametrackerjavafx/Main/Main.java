@@ -1,26 +1,62 @@
 package org.example.mygametrackerjavafx.Main;
 
+import org.example.mygametrackerjavafx.ProcessTracker.ProcessFolderVerifier;
+import org.example.mygametrackerjavafx.ProcessTracker.ProcessGameGetter;
+import org.example.mygametrackerjavafx.ProcessTracker.ProcessScanner;
 import org.example.mygametrackerjavafx.connectionDAO.InsertGames;
 import org.example.mygametrackerjavafx.Model.Game;
 
-import java.sql.*;
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Objects;
-import java.util.Scanner;
+import java.util.*;
 
 
 public class Main {
     public static void main(String[] args) throws Exception {
         Scanner scanner = new Scanner(System.in);
 
+        final String GREEN_BOLD = "\033[1;32m";
+        final String RESET = "\033[0m";
+
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        Date date = new Date();
 
         Game game1 = new Game();
 
         InsertGames insertGames = new InsertGames();
 
+        String gameNameGlobal = "";
+
+        Set<Integer> seenPids = new HashSet<>();
+
         while (true) {
+
+            List<ProcessScanner.ProcessInfo> processes = ProcessScanner.getAllProcessPaths();
+
+            for (ProcessScanner.ProcessInfo p : processes) {
+
+                if (!seenPids.contains(p.pid)) {
+                    seenPids.add(p.pid);
+
+                    if (ProcessFolderVerifier.folderExists(p.path) && !gameNameGlobal.equals(ProcessGameGetter.getGameName(p.path))) {
+                        String gameName = ProcessGameGetter.getGameName(p.path);
+                        gameNameGlobal = gameName;
+                        System.out.println(GREEN_BOLD + " Game Found: " + gameName + RESET);
+                        System.out.println(GREEN_BOLD + " Path: " + p.path + RESET);
+                    }
+                }
+            }
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
+
+
+
+        /* while (true) {
             System.out.println("1 for register a game");
             System.out.println("2 for see the games");
             System.out.println("3 to exit");
@@ -114,4 +150,6 @@ public class Main {
         }
         return character;
     }
+    */
 }
+

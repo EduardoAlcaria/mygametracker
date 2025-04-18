@@ -8,12 +8,11 @@ import java.util.List;
 import java.util.Set;
 
 public class ProcessMonitor {
-    private static final Set<String> trustedPaths = new HashSet<>(List.of(
+    /*private static final Set<String> trustedPaths = new HashSet<>(List.of(
             "steam\\steamapps\\common",
             "c:\\games"));
 
     public static void main(String[] args) {
-
 
         Set<Integer> seenPids = new HashSet<>();
 
@@ -41,7 +40,6 @@ public class ProcessMonitor {
         }
     }
 
-
     public static String getGameName(String path) {
         try {
             Path f = Paths.get(path);
@@ -54,14 +52,5 @@ public class ProcessMonitor {
         }
         return "";
     }
-
-    public static boolean folderExists(String path) {
-        String pathLowerCase = path.toLowerCase();
-        for (String trustedPath : trustedPaths) {
-            if (pathLowerCase.contains(trustedPath)) {
-                return true;
-            }
-        }
-        return false;
-    }
+    */
 }
