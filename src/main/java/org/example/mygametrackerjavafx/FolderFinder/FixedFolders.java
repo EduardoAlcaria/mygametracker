@@ -1,36 +1,30 @@
 package org.example.mygametrackerjavafx.FolderFinder;
 
-
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 public enum FixedFolders {
-    STEAM{
-        @Override
-        public Path getPath(){
-            return Paths.get ("C:\\Program Files (x86)\\Steam\\steamapps\\common");
-        }
-    };
+    STEAM("steamapps\\common"),
+    GAMES("C:\\Games");
 
+    private final String identifier;
 
-    public abstract Path getPath();
-    public static boolean matches(Path pathToCheck){
-        for (FixedFolders folders : values()){
-            if (folders.getPath().equals(pathToCheck)){
-                return true;
-            }
-            if (pathToCheck.getParent().equals(folders.getPath())){
-                return true;
-            }
-            if (pathToCheck.getParent().toString().contains("steamapps")){
-                return true;
-            }
-        }
-        return false;
+    FixedFolders(String identifier) {
+        this.identifier = identifier.toLowerCase();
     }
 
+    public boolean isMatch(Path path) {
+        Path normalized = path.toAbsolutePath().normalize();
+        return normalized.toString().toLowerCase().contains(identifier);
+    }
 
-
-
+    public static FixedFolders fromPath(Path path) {
+        for (FixedFolders folder : values()) {
+            if (folder.isMatch(path)) {
+                return folder;
+            }
+        }
+        return null;
+    }
 
 }
+

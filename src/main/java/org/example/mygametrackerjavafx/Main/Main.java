@@ -3,26 +3,16 @@ package org.example.mygametrackerjavafx.Main;
 import org.example.mygametrackerjavafx.ProcessTracker.ProcessFolderVerifier;
 import org.example.mygametrackerjavafx.ProcessTracker.ProcessGameGetter;
 import org.example.mygametrackerjavafx.ProcessTracker.ProcessScanner;
-import org.example.mygametrackerjavafx.connectionDAO.InsertGames;
-import org.example.mygametrackerjavafx.Model.Game;
 
-import java.time.format.DateTimeFormatter;
+import java.nio.file.Path;
 import java.util.*;
 
 
 public class Main {
-    public static void main(String[] args) throws Exception {
-        Scanner scanner = new Scanner(System.in);
+    public static void main(String[] args) {
 
         final String GREEN_BOLD = "\033[1;32m";
         final String RESET = "\033[0m";
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        Date date = new Date();
-
-        Game game1 = new Game();
-
-        InsertGames insertGames = new InsertGames();
 
         String gameNameGlobal = "";
 
@@ -32,12 +22,13 @@ public class Main {
 
             List<ProcessScanner.ProcessInfo> processes = ProcessScanner.getAllProcessPaths();
 
+            System.out.println(GREEN_BOLD + " Listening ... " + RESET);
             for (ProcessScanner.ProcessInfo p : processes) {
 
                 if (!seenPids.contains(p.pid)) {
                     seenPids.add(p.pid);
 
-                    if (ProcessFolderVerifier.folderExists(p.path) && !gameNameGlobal.equals(ProcessGameGetter.getGameName(p.path))) {
+                    if (ProcessFolderVerifier.matches(Path.of(p.path)) && !gameNameGlobal.equals(ProcessGameGetter.getGameName(p.path))) {
                         String gameName = ProcessGameGetter.getGameName(p.path);
                         gameNameGlobal = gameName;
                         System.out.println(GREEN_BOLD + " Game Found: " + gameName + RESET);

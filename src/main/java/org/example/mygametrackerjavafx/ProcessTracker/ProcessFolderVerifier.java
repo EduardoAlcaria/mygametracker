@@ -1,18 +1,43 @@
 package org.example.mygametrackerjavafx.ProcessTracker;
 
+import org.example.mygametrackerjavafx.FolderFinder.FixedFoldersLister;
 
-public class ProcessFolderVerifier {
+import java.nio.file.Path;
 
-    private static final String[] trustedPaths = new String[]{
-            "steam\\steamapps\\common",
-            "c:\\games"};
+public enum ProcessFolderVerifier {
+    STEAM {
+        @Override
+        public Path getPath() {
+            return FixedFoldersLister.getValidFolder().stream()
+                    .filter(p -> p.toString().toLowerCase().contains("steamapps\\common"))
+                    .findFirst()
+                    .orElse(null);
+        }
+    },
+    GAMES{
+      @Override
+      public Path getPath(){
+          return FixedFoldersLister.getValidFolder().stream()
+                  .filter(p -> p.toString().toLowerCase().contains("games"))
+                  .findFirst()
+                  .orElse(null);
+      }
+    };
 
-    public static boolean folderExists(String path) {
-        String pathLowerCase = path.toLowerCase();
-        for (String trustedPath : trustedPaths) {
-            if (pathLowerCase.contains(trustedPath)) {
-                return true;
-            }
+
+    public abstract Path getPath();
+
+
+    public static boolean matches(Path pathToCheck) {
+
+        pathToCheck = pathToCheck.toAbsolutePath().normalize();
+
+
+
+        for (ProcessFolderVerifier folders : values()) {
+            Path basePath = folders.getPath().toAbsolutePath().normalize();
+            if (pathToCheck.equals(basePath)) return true;
+            if (pathToCheck.startsWith(basePath)) return true;
         }
         return false;
     }
