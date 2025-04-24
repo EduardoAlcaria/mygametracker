@@ -13,7 +13,7 @@ public class FolderScanner {
         try {
             Files.walkFileTree(startDir, new SimpleFileVisitor<>(){
                 @Override
-                public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs){
+                public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
                     try {
                         dir.toRealPath();
                     }catch (AccessDeniedException ade){
@@ -22,7 +22,7 @@ public class FolderScanner {
                         return FileVisitResult.SKIP_SUBTREE;
                     }
 
-                    FixedFolders match = FixedFolders.fromPath(dir);
+                    FixedFoldersEnum match = FixedFoldersEnum.fromPath(dir);
                     if (match != null){
                         foundFolders.add(dir);
                         return FileVisitResult.SKIP_SUBTREE;

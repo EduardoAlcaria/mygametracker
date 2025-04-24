@@ -8,19 +8,13 @@ public enum ProcessFolderVerifier {
     STEAM {
         @Override
         public Path getPath() {
-            return FixedFoldersLister.getValidFolder().stream()
-                    .filter(p -> p.toString().toLowerCase().contains("steamapps\\common"))
-                    .findFirst()
-                    .orElse(null);
+            return FixedFoldersLister.getValidFolder().get(0);
         }
     },
     GAMES{
       @Override
       public Path getPath(){
-          return FixedFoldersLister.getValidFolder().stream()
-                  .filter(p -> p.toString().toLowerCase().contains("games"))
-                  .findFirst()
-                  .orElse(null);
+          return FixedFoldersLister.getValidFolder().get(1);
       }
     };
 
@@ -33,10 +27,13 @@ public enum ProcessFolderVerifier {
         pathToCheck = pathToCheck.toAbsolutePath().normalize();
 
 
-
         for (ProcessFolderVerifier folders : values()) {
-            Path basePath = folders.getPath().toAbsolutePath().normalize();
-            if (pathToCheck.equals(basePath)) return true;
+            System.out.println(folders.getPath());
+            Path basePath = folders.getPath();
+
+            if (basePath == null) continue;
+
+            basePath = basePath.toAbsolutePath().normalize();
             if (pathToCheck.startsWith(basePath)) return true;
         }
         return false;

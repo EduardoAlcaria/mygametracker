@@ -1,40 +1,51 @@
 package org.example.mygametrackerjavafx.Main;
 
+import org.example.mygametrackerjavafx.FolderFinder.FolderUserInput;
 import org.example.mygametrackerjavafx.ProcessTracker.ProcessFolderVerifier;
 import org.example.mygametrackerjavafx.ProcessTracker.ProcessGameGetter;
 import org.example.mygametrackerjavafx.ProcessTracker.ProcessScanner;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
 
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
+
+        FolderUserInput.UserCustomPathWriter();
 
         final String GREEN_BOLD = "\033[1;32m";
         final String RESET = "\033[0m";
 
-        String gameNameGlobal = "";
 
         Set<Integer> seenPids = new HashSet<>();
 
-        while (true) {
+        String gameNameFolder = "";
 
+        boolean isListening = true;
+        while (true) {
+            if (isListening) {
+                System.out.println(GREEN_BOLD + " Listening ... " + RESET);
+                isListening = false;
+            }
             List<ProcessScanner.ProcessInfo> processes = ProcessScanner.getAllProcessPaths();
 
-            System.out.println(GREEN_BOLD + " Listening ... " + RESET);
             for (ProcessScanner.ProcessInfo p : processes) {
-
                 if (!seenPids.contains(p.pid)) {
+
                     seenPids.add(p.pid);
 
-                    if (ProcessFolderVerifier.matches(Path.of(p.path)) && !gameNameGlobal.equals(ProcessGameGetter.getGameName(p.path))) {
+                    if (ProcessFolderVerifier.matches(Path.of(p.path)) && !gameNameFolder.equals(ProcessGameGetter.getGameName(p.path))) {
+                        System.out.println(ProcessGameGetter.getGameName(p.path));
                         String gameName = ProcessGameGetter.getGameName(p.path);
-                        gameNameGlobal = gameName;
+                        gameNameFolder = gameName;
                         System.out.println(GREEN_BOLD + " Game Found: " + gameName + RESET);
                         System.out.println(GREEN_BOLD + " Path: " + p.path + RESET);
+                        isListening = true;
                     }
                 }
+
             }
             try {
                 Thread.sleep(3000);
@@ -42,7 +53,6 @@ public class Main {
                 e.printStackTrace();
             }
         }
-
     }
 
 

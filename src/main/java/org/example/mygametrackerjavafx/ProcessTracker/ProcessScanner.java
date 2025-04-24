@@ -28,8 +28,12 @@ public class ProcessScanner {
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
 
             String line;
+            boolean firstLine = true;
             while ((line = reader.readLine()) != null) {
-                if (!line.contains(",")) continue;
+                if (firstLine) {
+                    firstLine = false;
+                    continue;
+                }
 
                 String[] parts = line.split(",", 3);
                 if (parts.length >= 3 && !parts[2].isEmpty()) {
@@ -37,7 +41,8 @@ public class ProcessScanner {
                         int pid = Integer.parseInt(parts[2].trim());
                         String path = parts[1].trim();
                         processList.add(new ProcessInfo(pid, path));
-                    } catch (NumberFormatException ignored) {}
+                    } catch (NumberFormatException ignored) {
+                    }
                 }
             }
 
