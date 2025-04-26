@@ -38,12 +38,9 @@ public class FixedFoldersLister {
             return Integer.MAX_VALUE;
         }));
         System.out.println("finished the folders validation");
-
-        System.out.println(folderPriority);
+        System.out.println("Ready to initiate a game");
 
         cachedFolders = validFolders;
-
-        System.out.println(validFolders);
 
         return validFolders;
     }

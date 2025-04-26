@@ -7,31 +7,32 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FolderScanner {
-    public static List<Path> scanForFixedFolder(Path startDir){
+    public static List<Path> scanForFixedFolder(Path startDir) {
         List<Path> foundFolders = new ArrayList<>();
 
         try {
-            Files.walkFileTree(startDir, new SimpleFileVisitor<>(){
+            Files.walkFileTree(startDir, new SimpleFileVisitor<>() {
                 @Override
                 public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
                     try {
-                        dir.toRealPath();
-                    }catch (AccessDeniedException ade){
+                        if (FolderGetterValid.isValid(dir.toRealPath())) {
+                            foundFolders.add(dir.toRealPath());
+                            return FileVisitResult.SKIP_SUBTREE;
+                        }
+                        if (FolderGetterValidUser.isValid(dir.toRealPath())) {
+                            foundFolders.add(dir.toRealPath());
+                            return FileVisitResult.SKIP_SUBTREE;
+                        }
+                    } catch (AccessDeniedException ade) {
                         return FileVisitResult.SKIP_SUBTREE;
-                    }catch (IOException e){
-                        return FileVisitResult.SKIP_SUBTREE;
-                    }
-
-                    FixedFoldersEnum match = FixedFoldersEnum.fromPath(dir);
-                    if (match != null){
-                        foundFolders.add(dir);
+                    } catch (IOException e) {
                         return FileVisitResult.SKIP_SUBTREE;
                     }
                     return FileVisitResult.CONTINUE;
                 }
 
                 @Override
-                public FileVisitResult visitFileFailed(Path file, IOException exc){
+                public FileVisitResult visitFileFailed(Path file, IOException exc) {
                     return FileVisitResult.SKIP_SUBTREE;
                 }
             });

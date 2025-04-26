@@ -4,70 +4,56 @@ import java.io.*;
 import java.nio.file.Path;
 import java.util.Scanner;
 
-public class FolderUserInput{
+public class FolderUserInput {
     static Scanner scanner = new Scanner(System.in);
     private static final String USERCUSTOMPATHFILETXT = "userCustomGamePathChoice.txt";
 
+    static {
+        File file = new File(USERCUSTOMPATHFILETXT);
+        try {
 
-    public static String UserCustomPathWriter() throws IOException {
+            if (!file.exists()){
+                file.createNewFile();
+            }
+        }catch (IOException e){
+            System.out.println("could not create the file: " + e.getMessage());
+        }
+    }
+    public static boolean UserCustomPathWriter() throws IOException {
         char choice;
-        char lowerChoice;
         String customPathName;
 
-        File doesFileExists = new File(USERCUSTOMPATHFILETXT);
+        while (true) {
+            System.out.println("Do you have a custom game path? [y/n]: ");
+            choice = scanner.next().charAt(0);
+            scanner.nextLine();
 
-        if (!doesFileExists.exists()) {
-            while (true) {
-                System.out.println("Do you have a custom game path? [y/n]: ");
-                choice = scanner.next().charAt(0);
-                scanner.nextLine();
+            if (Character.toLowerCase(choice) == 'y') {
+                while (true) {
+                    System.out.println("type the directory: ");
+                    customPathName = scanner.nextLine();
 
-                lowerChoice = Character.toLowerCase(choice);
+                    File file = new File(customPathName);
 
-                if (lowerChoice == 'y') {
-                    while (true) {
-                        System.out.println("type the directory: ");
-                        customPathName = scanner.nextLine();
-
-                        File file = new File(customPathName);
-
-                        if (!file.isDirectory()) {
-                            System.out.println("Please type only valid dirs");
-                            continue;
-                        }
-                        if (file.isDirectory()) {
-                            FileWriter writer = new FileWriter(USERCUSTOMPATHFILETXT, true);
-                            writer.write(customPathName);
-                            writer.close();
-                            break;
-                        }
+                    if (!file.isDirectory()) {
+                        System.out.println("Please type only valid dirs");
+                        continue;
                     }
-                    break;
-
-                }
-
-                if (lowerChoice != 'n' && lowerChoice != 'y') {
-                    System.out.println("invalid option");
-                    continue;
-                }
-
-                if (lowerChoice == 'n') {
-                    System.out.println("following the program without a custom path");
-                    break;
+                    if (file.isDirectory()) {
+                        FileWriter writer = new FileWriter(USERCUSTOMPATHFILETXT, false);
+                        writer.write(customPathName);
+                        writer.close();
+                        return true;
+                    }
                 }
 
             }
-        }
-        return null;
-    }
-    public static String UserCustomPathReader() throws IOException {
 
-        BufferedReader reader = new BufferedReader(new FileReader(USERCUSTOMPATHFILETXT));
-        String line;
-        while ((line = reader.readLine()) != null) {
-            return line;
+            if (Character.toLowerCase(choice) == 'n') {
+                System.out.println("following the program without a custom path");
+                return false;
+            }
+            System.out.println("invalid option, please type only y or n:");
         }
-
-        return null;
     }
 }

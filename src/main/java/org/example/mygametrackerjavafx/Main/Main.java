@@ -33,7 +33,6 @@ public class Main {
 
             for (ProcessScanner.ProcessInfo p : processes) {
                 if (!seenPids.contains(p.pid)) {
-
                     seenPids.add(p.pid);
 
                     if (ProcessFolderVerifier.matches(Path.of(p.path)) && !gameNameFolder.equals(ProcessGameGetter.getGameName(p.path))) {

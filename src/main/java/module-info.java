@@ -14,6 +14,8 @@ module org.example.mygametrackerjavafx {
     requires com.sun.jna;
     requires java.desktop;
     requires com.sun.jna.platform;
+    requires jdk.compiler;
+    requires com.fasterxml.jackson.databind;
 
     opens org.example.mygametrackerjavafx to javafx.fxml;
     exports org.example.mygametrackerjavafx.View;

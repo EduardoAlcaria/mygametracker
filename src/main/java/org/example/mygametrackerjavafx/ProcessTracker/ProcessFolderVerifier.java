@@ -28,7 +28,6 @@ public enum ProcessFolderVerifier {
 
 
         for (ProcessFolderVerifier folders : values()) {
-            System.out.println(folders.getPath());
             Path basePath = folders.getPath();
 
             if (basePath == null) continue;
