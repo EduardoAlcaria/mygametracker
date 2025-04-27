@@ -1,7 +1,6 @@
 package org.example.mygametrackerjavafx.FolderFinder;
 
 import java.io.*;
-import java.nio.file.Path;
 import java.util.Scanner;
 
 public class FolderUserInput {

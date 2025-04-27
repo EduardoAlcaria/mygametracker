@@ -7,12 +7,12 @@ import org.example.mygametrackerjavafx.ProcessTracker.ProcessScanner;
 
 import java.io.IOException;
 import java.nio.file.Path;
+
 import java.util.*;
 
 
 public class Main {
     public static void main(String[] args) throws IOException {
-
         FolderUserInput.UserCustomPathWriter();
 
         final String GREEN_BOLD = "\033[1;32m";

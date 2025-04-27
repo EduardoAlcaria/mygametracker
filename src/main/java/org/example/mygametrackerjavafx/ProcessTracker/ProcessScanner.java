@@ -21,7 +21,7 @@ public class ProcessScanner {
         }
     }
 
-    public static List<ProcessInfo> getAllProcessPaths() {
+    public static List<ProcessInfo> getAllProcessPaths(){
         List<ProcessInfo> processList = new ArrayList<>();
         try {
             Process process = Runtime.getRuntime().exec("wmic process get ProcessId,ExecutablePath /format:csv");
