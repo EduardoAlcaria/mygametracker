@@ -3,6 +3,9 @@ package org.example.mygametrackerjavafx.FolderFinder;
 import java.io.*;
 import java.nio.file.Path;
 
+
+
+
 public class FolderGetterValid {
 
     public static boolean isValid(Path dirToCheck) {
