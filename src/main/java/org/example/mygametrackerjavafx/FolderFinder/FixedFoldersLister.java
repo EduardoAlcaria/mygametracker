@@ -31,7 +31,6 @@ public class FixedFoldersLister {
 
             for (int i = 0; i < folderPriority.size(); i++) {
                 if (folderPath.contains(folderPriority.get(i).toLowerCase())) {
-                    System.out.println(i);
                     return i;
                 }
             }
