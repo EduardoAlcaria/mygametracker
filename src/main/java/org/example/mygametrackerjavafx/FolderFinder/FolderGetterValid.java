@@ -27,11 +27,11 @@ public class FolderGetterValid {
 
         } catch (FileNotFoundException e) {
 
-            System.out.println("could not find the file: " + e.getMessage());;
+            System.out.println("could not find the file: " + e.getMessage());
 
         } catch (IOException e) {
 
-            System.out.println("could not read the file: " + e.getMessage());;
+            System.out.println("could not read the file: " + e.getMessage());
 
         }
         return false;
