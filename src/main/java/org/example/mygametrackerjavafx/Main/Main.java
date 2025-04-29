@@ -1,5 +1,6 @@
 package org.example.mygametrackerjavafx.Main;
 
+import org.apache.commons.lang3.time.StopWatch;
 import org.example.mygametrackerjavafx.FolderFinder.FolderUserInput;
 import org.example.mygametrackerjavafx.ProcessTracker.ProcessFolderVerifier;
 import org.example.mygametrackerjavafx.ProcessTracker.ProcessGameGetter;
@@ -9,6 +10,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 
 public class Main {
@@ -18,12 +20,13 @@ public class Main {
         final String GREEN_BOLD = "\033[1;32m";
         final String RESET = "\033[0m";
 
-
+        StopWatch stopWatch = new StopWatch();
         Set<Integer> seenPids = new HashSet<>();
 
-        String gameNameFolder = "";
+        String gameName = "";
 
         boolean isListening = true;
+
         while (true) {
             if (isListening) {
                 System.out.println(GREEN_BOLD + " Listening ... " + RESET);
@@ -35,17 +38,42 @@ public class Main {
                 if (!seenPids.contains(p.pid)) {
                     seenPids.add(p.pid);
 
-                    if (ProcessFolderVerifier.matches(Path.of(p.path)) && !gameNameFolder.equals(ProcessGameGetter.getGameName(p.path))) {
-                        System.out.println(ProcessGameGetter.getGameName(p.path));
-                        String gameName = ProcessGameGetter.getGameName(p.path);
-                        gameNameFolder = gameName;
+                    if (ProcessFolderVerifier.matches(Path.of(p.path)) && !gameName.equals(ProcessGameGetter.getGameName(p.path))) {
+                        if (stopWatch.isStarted()) {
+                            stopWatch.stop();
+                            stopWatch.reset();
+                        }
+                        stopWatch.start();
+                        gameName = ProcessGameGetter.getGameName(p.path);
                         System.out.println(GREEN_BOLD + " Game Found: " + gameName + RESET);
                         System.out.println(GREEN_BOLD + " Path: " + p.path + RESET);
                         isListening = true;
+                        break;
                     }
                 }
 
             }
+            boolean isRunning = false;
+            for (ProcessScanner.ProcessInfo p : processes) {
+                String currentProcessName = ProcessGameGetter.getGameName(p.path);
+                if (gameName.equals(currentProcessName)) {
+                    isRunning = true;
+                    break;
+                }
+            }
+
+            if (!isRunning && stopWatch.isStarted()) {
+                stopWatch.stop();
+                stopWatch.reset();
+                System.out.println(gameName);
+                System.out.println(stopWatch.getTime(TimeUnit.SECONDS));
+            }
+            stopWatch.reset();
+            gameName = "";
+            seenPids.clear();
+            isListening = true;
+
+
             try {
                 Thread.sleep(3000);
             } catch (InterruptedException e) {
