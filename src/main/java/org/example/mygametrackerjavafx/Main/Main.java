@@ -1,6 +1,8 @@
 package org.example.mygametrackerjavafx.Main;
 
+import org.apache.commons.lang3.time.StopWatch;
 import org.example.mygametrackerjavafx.FolderFinder.FolderUserInput;
+import org.example.mygametrackerjavafx.Model.Game;
 import org.example.mygametrackerjavafx.ProcessTracker.ProcessFolderVerifier;
 import org.example.mygametrackerjavafx.ProcessTracker.ProcessGameGetter;
 import org.example.mygametrackerjavafx.ProcessTracker.ProcessScanner;
@@ -9,47 +11,80 @@ import java.io.IOException;
 import java.nio.file.Path;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 
 public class Main {
+    private static long finalTimeSpend = 0;
+    private static String gameNameFolder = "";
     public static void main(String[] args) throws IOException {
+
+
         FolderUserInput.UserCustomPathWriter();
+
+        StopWatch stopWatch = new StopWatch();
 
         final String GREEN_BOLD = "\033[1;32m";
         final String RESET = "\033[0m";
 
-
         Set<Integer> seenPids = new HashSet<>();
 
-        String gameNameFolder = "";
+
 
         boolean isListening = true;
         while (true) {
+
             if (isListening) {
                 System.out.println(GREEN_BOLD + " Listening ... " + RESET);
                 isListening = false;
             }
             List<ProcessScanner.ProcessInfo> processes = ProcessScanner.getAllProcessPaths();
-
             for (ProcessScanner.ProcessInfo p : processes) {
+
                 if (!seenPids.contains(p.pid)) {
                     seenPids.add(p.pid);
 
                     if (ProcessFolderVerifier.matches(Path.of(p.path)) && !gameNameFolder.equals(ProcessGameGetter.getGameName(p.path))) {
+                        stopWatch.start();
                         System.out.println(ProcessGameGetter.getGameName(p.path));
                         String gameName = ProcessGameGetter.getGameName(p.path);
                         gameNameFolder = gameName;
                         System.out.println(GREEN_BOLD + " Game Found: " + gameName + RESET);
                         System.out.println(GREEN_BOLD + " Path: " + p.path + RESET);
                         isListening = true;
+                        break;
                     }
                 }
-
             }
+            boolean isRunning = false;
+            for (ProcessScanner.ProcessInfo p :processes) {
+                if (gameNameFolder.equals(ProcessGameGetter.getGameName(p.path))) {
+                    isRunning = true;
+                    break;
+                }
+            }
+            long timeSpend = 0;
+            if (!isRunning) {
+                stopWatch.stop();
+                System.out.format("%02d:%02d:%02d\n", stopWatch.getTime(TimeUnit.HOURS), stopWatch.getTime(TimeUnit.MINUTES), (stopWatch.getTime(TimeUnit.SECONDS)%60));
+                timeSpend += stopWatch.getTime(TimeUnit.SECONDS);
+                stopWatch.reset();
+                Game game = new Game(gameNameFolder, timeSpend);
+                System.out.println(game.getGameName());
+                long hours = timeSpend / 3600;
+                long min = timeSpend / 60 % 60;
+                long segs = timeSpend % 60;
+
+                String time = String.format("%02d:%02d:%02d", hours, min, segs);
+                gameNameFolder = "";
+            }
+
+
             try {
                 Thread.sleep(3000);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                System.out.println(e.getMessage());
             }
         }
     }

@@ -8,6 +8,7 @@ public class Game {
     private String status;
     private Date startPlayingOn;
     private Date finishedPlayingOn;
+    private long playedTime;
 
     public void print() {
         System.out.println("Title: " + this.gameName);
@@ -15,6 +16,19 @@ public class Game {
         System.out.println("Status: " + this.status);
         System.out.println("Start Playing on: " + this.startPlayingOn);
         System.out.println("Finished Playing on: " + this.finishedPlayingOn);
+    }
+
+    public Game(String gameName, long playedTime) {
+        this.gameName = gameName;
+        this.playedTime = playedTime;
+    }
+
+    public long getPlayedTime() {
+        return playedTime;
+    }
+
+    public void setPlayedTime(long playedTime) {
+        this.playedTime += playedTime;
     }
 
     public String getStatus() {
