@@ -2,13 +2,17 @@ package org.example.mygametrackerjavafx.Main;
 
 import org.apache.commons.lang3.time.StopWatch;
 import org.example.mygametrackerjavafx.FolderFinder.FolderUserInput;
+import org.example.mygametrackerjavafx.Model.Game;
 import org.example.mygametrackerjavafx.ProcessTracker.ProcessFolderVerifier;
 import org.example.mygametrackerjavafx.ProcessTracker.ProcessGameGetter;
 import org.example.mygametrackerjavafx.ProcessTracker.ProcessScanner;
+import org.example.mygametrackerjavafx.connectionDAO.DaoHandler;
+import org.example.mygametrackerjavafx.connectionDAO.GamesDAO;
 
 import java.io.IOException;
 import java.nio.file.Path;
 
+import java.sql.Date;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -23,10 +27,17 @@ public class Main {
         StopWatch stopWatch = new StopWatch();
         Set<Integer> seenPids = new HashSet<>();
 
+        List<String> gamesDB = new ArrayList<>();
+        List<String> gameGenreDB = new ArrayList<>();
+        List<String> gameStatusDB = new ArrayList<>();
+        List<Date> startPlayingDB = new ArrayList<>();
+        List<Date> finishedPlayingDB = new ArrayList<>();
+        List<Long> timeSpendPLayingDB = new ArrayList<>();
+
         String gameName = "";
 
         boolean isListening = true;
-
+        Scanner scanner = new Scanner(System.in);
         while (true) {
             if (isListening) {
                 System.out.println(GREEN_BOLD + " Listening ... " + RESET);
@@ -47,6 +58,7 @@ public class Main {
                         gameName = ProcessGameGetter.getGameName(p.path);
                         System.out.println(GREEN_BOLD + " Game Found: " + gameName + RESET);
                         System.out.println(GREEN_BOLD + " Path: " + p.path + RESET);
+                        gamesDB.add(gameName);
                         isListening = true;
                         break;
                     }
@@ -66,13 +78,57 @@ public class Main {
                 stopWatch.stop();
                 stopWatch.reset();
                 System.out.println(gameName);
-                System.out.println(stopWatch.getTime(TimeUnit.SECONDS));
+                long section = 0;
+                section += stopWatch.getTime(TimeUnit.SECONDS);
+                timeSpendPLayingDB.add(section);
             }
             stopWatch.reset();
+
+
+            for (int i = 0; i < gamesDB.size(); i++) {
+                System.out.println(GREEN_BOLD + gamesDB.get(i) + " Genre? " + RESET);
+                String genre = scanner.nextLine();
+
+                System.out.println(GREEN_BOLD + gameName + " Status? " + RESET);
+                String status = scanner.nextLine();
+
+                System.out.println(GREEN_BOLD + gameName + " Start Date? " + RESET);
+                String startDate = scanner.nextLine();
+
+                System.out.println(GREEN_BOLD + gameName + " Finish Date? " + RESET);
+                String finishDate = scanner.nextLine();
+
+                gameGenreDB.add(genre);
+                gameStatusDB.add(status);
+                startPlayingDB.add(Date.valueOf(startDate));
+                finishedPlayingDB.add(Date.valueOf(finishDate));
+
+                Game game = new Game(gamesDB.get(i), gameGenreDB.get(i),
+                        gameStatusDB.get(i), startPlayingDB.get(i), finishedPlayingDB.get(i), timeSpendPLayingDB.get(i));
+
+
+                DaoHandler.updateDB(game);
+
+
+
+
+                gamesDB.clear();
+                gameStatusDB.clear();
+                timeSpendPLayingDB.clear();
+                startPlayingDB.clear();
+                finishedPlayingDB.clear();
+
+
+
+
+                DaoHandler.findAll();
+
+            }
+
+
             gameName = "";
             seenPids.clear();
             isListening = true;
-
 
             try {
                 Thread.sleep(3000);
@@ -81,103 +137,4 @@ public class Main {
             }
         }
     }
-
-
-
-        /* while (true) {
-            System.out.println("1 for register a game");
-            System.out.println("2 for see the games");
-            System.out.println("3 to exit");
-            int choice = scanner.nextInt();
-            scanner.nextLine();
-            switch (choice) {
-                case 1:
-                    System.out.print("Enter the game name: ");
-                    String gameName = scanner.nextLine();
-
-                    game1.setGameName(gameName);
-
-                    System.out.print("Enter the game genre: ");
-                    String gameGenre = scanner.nextLine();
-
-                    game1.setGameGenre(gameGenre);
-
-                    System.out.print("Have you finished playing " + game1.getGameName() + " (y/n)? ");
-                    char playingStatus = scanner.nextLine().charAt(0);
-                    playingStatus = charVerification(playingStatus);
-
-                    switch (playingStatus) {
-                        case 'y':
-                            game1.setStatus("Finished");
-                            break;
-                        case 'n':
-                            game1.setStatus("Playing");
-                    }
-
-                    System.out.print("Do you remember when you started playing (y/n)? ");
-                    char doYouRememberStartPlayingDate = Character.toLowerCase(scanner.next().charAt(0));
-                    doYouRememberStartPlayingDate = charVerification(doYouRememberStartPlayingDate);
-
-                    scanner.nextLine();
-
-                    switch (doYouRememberStartPlayingDate) {
-                        case 'y':
-                            System.out.print("Enter the starting playing date (dd/mm/yyyy): ");
-                            String startPlayingOn = scanner.nextLine();
-                            Date dateStartPlaying = Date.valueOf(LocalDate.parse(startPlayingOn, formatter));
-                            game1.setStartPlayingOn(dateStartPlaying);
-                            break;
-
-                        case 'n':
-                            break;
-                    }
-
-                    if (Objects.equals(game1.getStatus(), "Finished")) {
-                        System.out.print("Do you remember the date that you ended playing (y/n)? ");
-                        char doYouRememberEndedPlayingDate = Character.toLowerCase(scanner.next().charAt(0));
-                        doYouRememberEndedPlayingDate = charVerification(doYouRememberEndedPlayingDate);
-
-                        scanner.nextLine();
-
-                        switch (doYouRememberEndedPlayingDate) {
-                            case 'y':
-                                System.out.print("Enter the finished playing date (dd/mm/yyyy): ");
-                                String finishedPlayingOn = scanner.nextLine();
-                                Date dateFinishedPlaying = Date.valueOf(LocalDate.parse(finishedPlayingOn, formatter));
-                                System.out.println(dateFinishedPlaying);
-                                game1.setFinishedPlayingOn(dateFinishedPlaying);
-                                break;
-
-                            case 'n':
-                                break;
-                        }
-                    }
-                    insertGames.insert(game1.getGameName(), game1.getGameGenre(), game1.getStatus(),
-                            game1.getStartPlayingOn(), game1.getFinishedPlayingOn());
-                    break;
-
-                case 2:
-                    System.out.println();
-                    insertGames.print();
-                    break;
-                case 3:
-                    break;
-            }
-            if (choice == 3) break;
-        }
-        scanner.close();
-    }
-
-    public static char charVerification(char character) {
-        if (character != 'y' && character != 'n') {
-            do {
-                System.out.print("Invalid Option, type ONLY Y or N: ");
-                Scanner verifycationScanner = new Scanner(System.in);
-                character = Character.toLowerCase(verifycationScanner.next().charAt(0));
-            } while (character != 'y' && character != 'n');
-        }
-        return character;
-    }
-    */
 }
-

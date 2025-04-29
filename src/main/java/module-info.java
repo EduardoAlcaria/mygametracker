@@ -17,6 +17,8 @@ module org.example.mygametrackerjavafx {
     requires jdk.compiler;
     requires com.fasterxml.jackson.databind;
     requires org.apache.commons.lang3;
+    requires junit;
+    requires org.junit.jupiter.api;
 
     opens org.example.mygametrackerjavafx to javafx.fxml;
     exports org.example.mygametrackerjavafx.View;

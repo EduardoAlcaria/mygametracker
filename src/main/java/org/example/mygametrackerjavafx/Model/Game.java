@@ -5,70 +5,44 @@ import java.sql.Date;
 public class Game {
     private String gameName;
     private String gameGenre;
-    private String status;
+    private String gameStatus;
     private Date startPlayingOn;
     private Date finishedPlayingOn;
-    private long playedTime;
+    private Long timeSpent;
 
-    public void print() {
-        System.out.println("Title: " + this.gameName);
-        System.out.println("Gen: " + this.gameGenre);
-        System.out.println("Status: " + this.status);
-        System.out.println("Start Playing on: " + this.startPlayingOn);
-        System.out.println("Finished Playing on: " + this.finishedPlayingOn);
-    }
 
-    public Game(String gameName, long playedTime) {
+    public Game(String gameName, String gameGenre, String gameStatus, Date startPlayingOn, Date finishedPlayingOn, Long timeSpent) {
         this.gameName = gameName;
-        this.playedTime = playedTime;
-    }
-
-    public long getPlayedTime() {
-        return playedTime;
-    }
-
-    public void setPlayedTime(long playedTime) {
-        this.playedTime += playedTime;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
+        this.gameGenre = gameGenre;
+        this.gameStatus = gameStatus;
+        this.startPlayingOn = startPlayingOn;
+        this.finishedPlayingOn = finishedPlayingOn;
+        this.timeSpent = timeSpent;
     }
 
     public String getGameName() {
         return gameName;
     }
 
-    public void setGameName(String gameName) {
-        this.gameName = gameName;
-    }
-
     public String getGameGenre() {
         return gameGenre;
     }
 
-    public void setGameGenre(String gameGenre) {
-        this.gameGenre = gameGenre;
+    public String getGameStatus() {
+        return gameStatus;
     }
+
 
     public Date getStartPlayingOn() {
         return startPlayingOn;
-    }
-
-    public void setStartPlayingOn(Date startPlayingOn) {
-        this.startPlayingOn = startPlayingOn;
     }
 
     public Date getFinishedPlayingOn() {
         return finishedPlayingOn;
     }
 
-    public void setFinishedPlayingOn(Date finishedPlayingOn) {
-        this.finishedPlayingOn = finishedPlayingOn;
+    public Long getTimeSpent() {
+        return timeSpent;
     }
 }
 

@@ -9,13 +9,13 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import org.example.mygametrackerjavafx.connectionDAO.InsertGames;
+import org.example.mygametrackerjavafx.connectionDAO.GamesDAO;
 
 public class GameTrackerUI extends Application {
     @Override
     public void start(Stage primaryStage) {
         primaryStage.setTitle("mygametracker");
-        InsertGames insertGames = new InsertGames();
+        GamesDAO insertGames = new GamesDAO();
 
         Text text = new Text("My Game Tracker V:0.0.1");
         text.setFont(Font.font("Arial", 20)); // Set font and size

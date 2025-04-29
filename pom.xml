@@ -60,7 +60,7 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>net.synedra</groupId>
+            <groupId>net.syn'edra</groupId>
             <artifactId>validatorfx</artifactId>
             <version>0.5.0</version>
             <exclusions>
@@ -103,6 +103,12 @@
             </exclusions>
         </dependency>
         <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>5.17.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>3.17.0</version>
@@ -133,6 +139,18 @@
             <groupId>net.java.dev.jna</groupId>
             <artifactId>jna-platform</artifactId>
             <version>5.13.0</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.10</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>5.10.2</version>
+            <scope>compile</scope>
         </dependency>
 
     </dependencies>
