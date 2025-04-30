@@ -1,12 +1,8 @@
 package org.example.mygametrackerjavafx.connectionDAO;
 
-import com.sun.jna.platform.win32.WinNT;
-import com.sun.source.tree.BreakTree;
 import org.example.mygametrackerjavafx.Model.Game;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
 
 public class GamesDAO {
     public void insert(Game game) {
@@ -60,42 +56,18 @@ public class GamesDAO {
         }
     }
 
-    public boolean doesItExistsOnDB(String gameTitle) throws SQLException {
-        String sql = "SELECT 1 game_title FROM games WHERE game_title = ?";
-        try (Connection conn = ConnectionDAO.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+    public void updateDB(Long timeUpdated, String gameStatus, String gameName) throws SQLException {
 
+        String sqlUpdate = "UPDATE games SET time_spent = ?, game_status = ? WHERE game_title = ?";
 
-            stmt.setString(1, gameTitle);
-            try (ResultSet rs = stmt.executeQuery()) {
-                return rs.next();
-            }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-            return false;
-        }
-    }
-
-    public void updateDB(Game game) throws SQLException {
-
-        if (!doesItExistsOnDB(game.getGameName())) {
-            insert(game);
-            return;
-        }
-
-        String sqlUpdate = "UPDATE games SET game_genre = ?, " +
-                "game_status = ?, start_playing_on = ?, finished_playing_on " +
-                "= ?, time_spent = ? WHERE game_title = ?";
 
         try (Connection conn = ConnectionDAO.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sqlUpdate)) {
 
-            stmt.setString(1, game.getGameGenre());
-            stmt.setString(2, game.getGameStatus());
-            stmt.setDate(3, game.getStartPlayingOn());
-            stmt.setDate(4, game.getFinishedPlayingOn());
-            stmt.setLong(5, game.getTimeSpent());
-            stmt.setString(6, game.getGameName());
+
+            stmt.setLong(1, timeUpdated);
+            stmt.setString(2, gameStatus);
+            stmt.setString(3, gameName);
 
             int rowsUpdated = stmt.executeUpdate();
             if (rowsUpdated > 0) {

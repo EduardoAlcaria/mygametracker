@@ -13,12 +13,15 @@ import java.io.IOException;
 import java.nio.file.Path;
 
 import java.sql.Date;
+import java.sql.SQLException;
+import java.sql.SQLOutput;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 
 public class Main {
-    public static void main(String[] args) throws IOException {
+    private static List<Game> gamesList = new ArrayList<>();
+    public static void main(String[] args) throws IOException, SQLException {
         FolderUserInput.UserCustomPathWriter();
 
         final String GREEN_BOLD = "\033[1;32m";
@@ -27,12 +30,16 @@ public class Main {
         StopWatch stopWatch = new StopWatch();
         Set<Integer> seenPids = new HashSet<>();
 
+
         List<String> gamesDB = new ArrayList<>();
         List<String> gameGenreDB = new ArrayList<>();
         List<String> gameStatusDB = new ArrayList<>();
         List<Date> startPlayingDB = new ArrayList<>();
         List<Date> finishedPlayingDB = new ArrayList<>();
         List<Long> timeSpendPLayingDB = new ArrayList<>();
+
+        gamesList.clear();
+        gamesList.addAll(DaoHandler.getAllGames());
 
         String gameName = "";
 
@@ -81,50 +88,54 @@ public class Main {
                 long section = 0;
                 section += stopWatch.getTime(TimeUnit.SECONDS);
                 timeSpendPLayingDB.add(section);
+
+                System.out.println("Have beaten the game? [y/n]: ");
+                String choice = scanner.nextLine();
+                while (true) {
+                    if (Character.toLowerCase(choice.charAt(0)) == 'y') {
+                        gameStatusDB.add("Finished");
+                        break;
+                    } else if (Character.toLowerCase(choice.charAt(0)) == 'n') {
+                        gameStatusDB.add("Playing");
+                        break;
+                    } else {
+                        System.out.println("only y or n please: ");
+                    }
+                }
+
             }
+
             stopWatch.reset();
 
 
             for (int i = 0; i < gamesDB.size(); i++) {
-                System.out.println(GREEN_BOLD + gamesDB.get(i) + " Genre? " + RESET);
-                String genre = scanner.nextLine();
 
-                System.out.println(GREEN_BOLD + gameName + " Status? " + RESET);
-                String status = scanner.nextLine();
+                if (!DaoHandler.itExistsInDB(gamesDB.get(i))) {
+                    System.out.println(GREEN_BOLD + gamesDB.get(i) + " Genre? " + RESET);
+                    String genre = scanner.nextLine();
 
-                System.out.println(GREEN_BOLD + gameName + " Start Date? " + RESET);
-                String startDate = scanner.nextLine();
+                    System.out.println(GREEN_BOLD + gamesDB.get(i) + " Start Date? (YYYY/MM/DD)" + RESET);
+                    String startDate = scanner.nextLine();
 
-                System.out.println(GREEN_BOLD + gameName + " Finish Date? " + RESET);
-                String finishDate = scanner.nextLine();
+                    System.out.println(GREEN_BOLD + gamesDB.get(i) + " Finish Date? (YYYY/MM/DD) " + RESET);
+                    String finishDate = scanner.nextLine();
 
-                gameGenreDB.add(genre);
-                gameStatusDB.add(status);
-                startPlayingDB.add(Date.valueOf(startDate));
-                finishedPlayingDB.add(Date.valueOf(finishDate));
+                    gameGenreDB.add(genre);
+                    startPlayingDB.add(Date.valueOf(startDate));
+                    finishedPlayingDB.add(Date.valueOf(finishDate));
 
-                Game game = new Game(gamesDB.get(i), gameGenreDB.get(i),
-                        gameStatusDB.get(i), startPlayingDB.get(i), finishedPlayingDB.get(i), timeSpendPLayingDB.get(i));
-
-
-                DaoHandler.updateDB(game);
-
-
-
+                    Game game = new Game(gamesDB.get(i), gameGenreDB.get(i),
+                            gameStatusDB.get(i), startPlayingDB.get(i), finishedPlayingDB.get(i), timeSpendPLayingDB.get(i));
+                } else {
+                    DaoHandler.updateDB(timeSpendPLayingDB.get(i), gameStatusDB.get(i), gamesDB.get(i));
+                }
 
                 gamesDB.clear();
                 gameStatusDB.clear();
                 timeSpendPLayingDB.clear();
                 startPlayingDB.clear();
                 finishedPlayingDB.clear();
-
-
-
-
-                DaoHandler.findAll();
-
             }
-
 
             gameName = "";
             seenPids.clear();
