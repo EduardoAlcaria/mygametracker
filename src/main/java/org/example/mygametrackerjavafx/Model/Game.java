@@ -20,6 +20,7 @@ public class Game {
         this.timeSpent = timeSpent;
     }
 
+
     public String getGameName() {
         return gameName;
     }

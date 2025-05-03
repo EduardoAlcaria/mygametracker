@@ -1,6 +1,7 @@
 package org.example.mygametrackerjavafx.ProcessTracker;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
@@ -51,5 +52,23 @@ public class ProcessScanner {
             e.printStackTrace();
         }
         return processList;
+    }
+
+    public static boolean isRunning(int pid) {
+        try {
+            Process proc = Runtime.getRuntime().exec("cmd /c tasklist /FI \"PID eq " + pid + "\"");
+            BufferedReader reader = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (line.contains(String.valueOf(pid))){
+                    return true;
+                }
+            }
+            reader.close();
+
+        }catch (IOException e){
+            System.out.println(e.getMessage());
+        }
+        return false;
     }
 }

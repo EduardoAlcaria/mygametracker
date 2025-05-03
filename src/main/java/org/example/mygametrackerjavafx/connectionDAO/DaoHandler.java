@@ -15,19 +15,18 @@ public class DaoHandler {
     private static GamesDAO gamesDAO = new GamesDAO();
 
     public static void insert(Game game) throws SQLException {
-        if (game.getGameName() != null && game.getGameGenre() != null && game.getGameStatus() != null && game.getStartPlayingOn() != null && game.getFinishedPlayingOn() != null) {
+        System.out.println("inserting a new game into the database ...");
             gamesDAO.insert(game);
-        }
     }
 
     public static List<Game> getAllGames() throws SQLException {
+        System.out.println("getting all games from the database ...");
         List<Game> games = new ArrayList<>();
         String query = "SELECT * FROM games";
 
         try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(query);
              ResultSet rs = pstmt.executeQuery()) {
-
             while (rs.next()) {
                 Game game = new Game(
                         rs.getString("game_title"),
@@ -43,32 +42,35 @@ public class DaoHandler {
         return games;
     }
 
+    public static Long getTotalTimeSpent(String gameName) throws SQLException {
+        System.out.println("getting the total time spent in the database ...");
+        String query = "SELECT time_spent FROM games WHERE game_title = ?";
 
-
-    public static void updateDB(Long timeUpdated, String gameStatus, String gameName) throws SQLException {
-
-        if (gameName == null || gameStatus == null || timeUpdated == null) {
-            throw new IllegalArgumentException("gameName is null");
-        }
-        String sql = "SELECT time_spent FROM games WHERE game_title = ?";
         try (Connection conn = getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setString(1, gameName);
-            try (ResultSet rs = stmt.executeQuery()) {
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setString(1, gameName);
+            try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
-                    timeUpdated += rs.getLong("time_spent");
+                    return rs.getLong("time_spent");
                 } else {
-                    timeUpdated = 0L;
+                    return 0L;
                 }
             }
+        }
 
+
+    }
+
+    public static void updateDB(Long timeUpdated, String gameStatus, String gameName) throws SQLException {
+        System.out.println("updating the database with the new game data ...");
+        if (gameName == null || gameStatus == null || timeUpdated == null) {
+            throw new IllegalArgumentException("gameName is null");
+        }else {
             gamesDAO.updateDB(timeUpdated, gameStatus, gameName);
         }
     }
 
     public static boolean itExistsInDB(String gameTitle) throws SQLException {
-
         if (gameTitle == null) throw new IllegalArgumentException("gameTitle is null");
 
         String sql = "SELECT game_title FROM games WHERE game_title = ?";
