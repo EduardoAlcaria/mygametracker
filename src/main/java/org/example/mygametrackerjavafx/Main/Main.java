@@ -21,22 +21,8 @@ import java.util.concurrent.TimeUnit;
 
 
 public class Main {
-    private static List<Game> gamesList = new ArrayList<>();
     private static List<String> gamesDB = new ArrayList<>();
-    private static List<String> gameGenreDB = new ArrayList<>();
-    private static List<String> gameStatusDB = new ArrayList<>();
-    private static List<Date> startPlayingDB = new ArrayList<>();
-    private static List<Date> finishedPlayingDB = new ArrayList<>();
-    private static List<Long> timeSpendPLayingDB = new ArrayList<>();
 
-    private static void clearAllTheLists() {
-        gamesDB.clear();
-        gameGenreDB.clear();
-        gameStatusDB.clear();
-        timeSpendPLayingDB.clear();
-        startPlayingDB.clear();
-        finishedPlayingDB.clear();
-    }
 
 
     public static void main(String[] args) throws IOException, SQLException, ParseException {
@@ -190,7 +176,7 @@ public class Main {
 
             }
 
-            clearAllTheLists();
+            gamesDB.clear();
 
             gameName = "";
 
