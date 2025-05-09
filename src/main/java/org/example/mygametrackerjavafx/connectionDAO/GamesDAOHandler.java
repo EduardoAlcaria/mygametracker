@@ -11,7 +11,7 @@ import java.util.List;
 
 import static org.example.mygametrackerjavafx.connectionDAO.ConnectionDAO.getConnection;
 
-public class DaoHandler {
+public class GamesDAOHandler {
     private static GamesDAO gamesDAO = new GamesDAO();
 
     public static void insert(Game game) throws SQLException {

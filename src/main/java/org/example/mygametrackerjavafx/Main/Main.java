@@ -3,10 +3,12 @@ package org.example.mygametrackerjavafx.Main;
 import org.apache.commons.lang3.time.StopWatch;
 import org.example.mygametrackerjavafx.FolderFinder.FolderUserInput;
 import org.example.mygametrackerjavafx.Model.Game;
+import org.example.mygametrackerjavafx.Model.User;
 import org.example.mygametrackerjavafx.ProcessTracker.ProcessFolderVerifier;
 import org.example.mygametrackerjavafx.ProcessTracker.ProcessGameGetter;
 import org.example.mygametrackerjavafx.ProcessTracker.ProcessScanner;
-import org.example.mygametrackerjavafx.connectionDAO.DaoHandler;
+import org.example.mygametrackerjavafx.connectionDAO.GamesDAOHandler;
+import org.example.mygametrackerjavafx.connectionDAO.UserDAOHandler;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -22,17 +24,49 @@ import java.util.concurrent.TimeUnit;
 
 public class Main {
     private static List<String> gamesDB = new ArrayList<>();
+    private static final Scanner scanner = new Scanner(System.in);
 
-
-
-    public static void main(String[] args) throws IOException, SQLException, ParseException {
+    public static void main(String[] args) throws Exception {
         FolderUserInput.UserCustomPathWriter();
+
+
+        System.out.println("[1] Login or [2] register account? ");
+        int choiceLogin = scanner.nextInt();
+        scanner.nextLine();
+        if (choiceLogin == 1) {
+            System.out.println("Login system");
+            System.out.println("----------------------------");
+
+            System.out.println("User name: ");
+            String userName = scanner.nextLine();
+
+
+            System.out.println("Password: ");
+            String password = scanner.nextLine();
+
+            User user = new User(userName, password);
+
+            UserDAOHandler.createAccount(userName);
+        }
+        if (choiceLogin == 2){
+            System.out.println("Register system");
+            System.out.println("----------------------------");
+
+            System.out.println("Register User name: ");
+            String userName = scanner.next();
+
+            System.out.println("Register Password: ");
+
+            String password = scanner.next();
+        }
+
+
 
         final String GREEN_BOLD = "\033[1;32m";
         final String RESET = "\033[0m";
 
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-        Scanner scanner = new Scanner(System.in);
+
 
 
         Set<Integer> seenPids = new HashSet<>();
@@ -59,7 +93,7 @@ public class Main {
 
                     if (ProcessFolderVerifier.matches(Path.of(p.path)) && !gameName.equals(ProcessGameGetter.getGameName(p.path))) {
                         gameName = ProcessGameGetter.getGameName(p.path);
-                        boolean dbExists = DaoHandler.itExistsInDB(ProcessGameGetter.getGameName(p.path));
+                        boolean dbExists = GamesDAOHandler.itExistsInDB(ProcessGameGetter.getGameName(p.path));
                         if (!dbExists) {
                             System.out.println(ProcessGameGetter.getGameName(p.path));
                             System.out.println(GREEN_BOLD + " Game Found: " + gameName + RESET);
@@ -99,10 +133,10 @@ public class Main {
 
                     System.out.println("game has been closed: " + GREEN_BOLD + gameNameMap + RESET);
 
-                    boolean dbExists = DaoHandler.itExistsInDB(gameNameMap);
+                    boolean dbExists = GamesDAOHandler.itExistsInDB(gameNameMap);
 
                     if (dbExists) {
-                        long oldTime = DaoHandler.getTotalTimeSpent(gameNameMap);
+                        long oldTime = GamesDAOHandler.getTotalTimeSpent(gameNameMap);
 
                         long newTime = oldTime + sessionTime;
 
@@ -123,7 +157,7 @@ public class Main {
                             }
                         }
                         System.out.println(gameNameMap);
-                        DaoHandler.updateDB(newTime, status, gameNameMap);
+                        GamesDAOHandler.updateDB(newTime, status, gameNameMap);
                     } else {
                         if (!dbExists) {
                             System.out.println(GREEN_BOLD + gameNameMap + " Genre? " + RESET);
@@ -152,7 +186,7 @@ public class Main {
                                     }
 
                                     Game game = new Game(gameNameMap, genre, status, parsedDateStart, parsedDateFinish, sessionTime);
-                                    DaoHandler.insert(game);
+                                    GamesDAOHandler.insert(game);
                                     break;
                                 }
                                 if (choice.equalsIgnoreCase("n")) {
@@ -162,7 +196,7 @@ public class Main {
 
                                     Game game = new Game(gameNameMap, genre, status, parsedDateStart, parsedDateFinish, sessionTime);
 
-                                    DaoHandler.insert(game);
+                                    GamesDAOHandler.insert(game);
                                     break;
 
                                 }
