@@ -10,12 +10,10 @@ import org.example.mygametrackerjavafx.ProcessTracker.ProcessScanner;
 import org.example.mygametrackerjavafx.connectionDAO.GamesDAOHandler;
 import org.example.mygametrackerjavafx.connectionDAO.UserDAOHandler;
 
-import java.io.IOException;
+
 import java.nio.file.Path;
 
 import java.sql.Date;
-import java.sql.SQLException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.*;
@@ -23,51 +21,68 @@ import java.util.concurrent.TimeUnit;
 
 
 public class Main {
-    private static List<String> gamesDB = new ArrayList<>();
+    private static final List<String> gamesDB = new ArrayList<>();
     private static final Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) throws Exception {
         FolderUserInput.UserCustomPathWriter();
 
+        String userName;
 
-        System.out.println("[1] Login or [2] register account? ");
-        int choiceLogin = scanner.nextInt();
-        scanner.nextLine();
-        if (choiceLogin == 1) {
-            System.out.println("Login system");
-            System.out.println("----------------------------");
+        while (true){
+            System.out.println("[1] Login or [2] register account? ");
+            int choiceLogin = scanner.nextInt();
+            scanner.nextLine();
+            if (choiceLogin == 1) {
+                System.out.println("Login system");
+                System.out.println("----------------------------");
 
-            System.out.println("User name: ");
-            String userName = scanner.nextLine();
+                System.out.println("User name: ");
+                userName = scanner.nextLine();
 
 
-            System.out.println("Password: ");
-            String password = scanner.nextLine();
+                System.out.println("Password: ");
+                String password = scanner.nextLine();
 
-            User user = new User(userName, password);
+                if (UserDAOHandler.login(userName, password)){
+                    System.out.println("login successful");
 
-            UserDAOHandler.createAccount(userName);
+                    break;
+                }else{
+                    System.out.println("try again");
+                }
+
+
+            }
+            if (choiceLogin == 2){
+                System.out.println("Register system");
+                System.out.println("----------------------------");
+
+                System.out.println("Register User name: ");
+                userName = scanner.nextLine();
+
+                System.out.println("Register Password: ");
+
+                String password = scanner.nextLine();
+
+                User user = new User(userName, password);
+
+                if (UserDAOHandler.createAccount(user)){
+                    System.out.println("account created successfully");
+                    break;
+                }else{
+                    System.out.println("try again");
+                }
+            }
         }
-        if (choiceLogin == 2){
-            System.out.println("Register system");
-            System.out.println("----------------------------");
 
-            System.out.println("Register User name: ");
-            String userName = scanner.next();
-
-            System.out.println("Register Password: ");
-
-            String password = scanner.next();
-        }
-
-
+        Game.setUserID(UserDAOHandler.getUserID(userName));
+        System.out.println("User ID: " + Game.getUserID());
 
         final String GREEN_BOLD = "\033[1;32m";
         final String RESET = "\033[0m";
 
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-
-
 
         Set<Integer> seenPids = new HashSet<>();
         Map<Integer, StopWatch> gameStopWatches = new HashMap<>();
@@ -185,7 +200,7 @@ public class Main {
                                         }
                                     }
 
-                                    Game game = new Game(gameNameMap, genre, status, parsedDateStart, parsedDateFinish, sessionTime);
+                                    Game game = new Game(gameNameMap, genre, status, parsedDateStart, parsedDateFinish, sessionTime, Game.getUserID());
                                     GamesDAOHandler.insert(game);
                                     break;
                                 }
@@ -194,7 +209,7 @@ public class Main {
                                     parsedDateStart = today;
                                     parsedDateFinish = null;
 
-                                    Game game = new Game(gameNameMap, genre, status, parsedDateStart, parsedDateFinish, sessionTime);
+                                    Game game = new Game(gameNameMap, genre, status, parsedDateStart, parsedDateFinish, sessionTime, Game.getUserID());
 
                                     GamesDAOHandler.insert(game);
                                     break;
