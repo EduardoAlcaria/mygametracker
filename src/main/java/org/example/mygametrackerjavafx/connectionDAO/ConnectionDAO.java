@@ -10,6 +10,10 @@ public class ConnectionDAO {
     private static final String password = "fnXJaDfEaTXCBVScTJSMTEOAFnsNjDGA";
 
     public static Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(url, user, password);
+        try {
+            return DriverManager.getConnection(url, user, password);
+        }catch (SQLException e){
+            throw new SQLException("failed to get the connection" + e);
+        }
     }
 }

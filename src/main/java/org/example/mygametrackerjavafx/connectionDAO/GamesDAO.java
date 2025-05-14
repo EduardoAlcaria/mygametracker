@@ -122,4 +122,17 @@ public class GamesDAO {
             }
         }
     }
+    protected static String getGameStatus(String gameName) throws SQLException {
+        String sqlQuery = "SELECT game_status FROM games WHERE game_title = ?";
+        try (Connection conn = ConnectionDAO.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sqlQuery)) {
+            stmt.setString(1, gameName);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getString("game_status");
+            } else {
+                throw new RuntimeException("game not found in the database");
+            }
+        }
+    }
 }

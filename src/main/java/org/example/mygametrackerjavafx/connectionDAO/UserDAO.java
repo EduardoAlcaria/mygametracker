@@ -1,9 +1,16 @@
 package org.example.mygametrackerjavafx.connectionDAO;
 
 
+import org.mindrot.jbcrypt.BCrypt;
+
 import java.sql.*;
 
 public class UserDAO {
+    protected static String hashPassword(String password) {
+        int logRound = 12;
+        return BCrypt.hashpw(password, BCrypt.gensalt(logRound));
+    }
+
 
     protected static boolean createAccount(String user, String password) {
         if (getUserFromDb(user)) {
@@ -16,8 +23,10 @@ public class UserDAO {
 
 
             stmt.setString(1, user);
-            stmt.setString(2, password);
+            stmt.setString(2, hashPassword(password));
 
+            System.out.println("user " + user);
+            System.out.println("hash password " + hashPassword(password));
 
             int rowsUpdated = stmt.executeUpdate();
             return rowsUpdated > 0;
@@ -38,9 +47,8 @@ public class UserDAO {
                 stmt.setString(1, userName);
                 try (ResultSet rs = stmt.executeQuery()) {
                     if (rs.next()) {
-
                         String dbPassword = rs.getString("password_hash");
-                        return dbPassword.equals(password);
+                        return BCrypt.checkpw(password, dbPassword);
                     }
                 }
             }

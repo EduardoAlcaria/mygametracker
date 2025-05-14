@@ -127,7 +127,6 @@ public class Main {
                 }
 
             }
-
             Iterator<Map.Entry<Integer, String>> iterator = gamePid.entrySet().iterator();
             while (iterator.hasNext()) {
                 Map.Entry<Integer, String> entry = iterator.next();
@@ -157,21 +156,26 @@ public class Main {
 
                         System.out.println("old time " + GREEN_BOLD + oldTime + RESET + " new time " + GREEN_BOLD + newTime + RESET);
 
-                        System.out.println("Have beaten the game? [y/n]: ");
-                        String choice = scanner.nextLine();
-
-                        while (true) {
-                            if (Character.toLowerCase(choice.charAt(0)) == 'y') {
-                                status = "Finished";
-                                parsedDateFinish = today;
-                                break;
-                            } else if (Character.toLowerCase(choice.charAt(0)) == 'n') {
-                                break;
-                            } else {
-                                System.out.println("only y or n please: ");
+                        if (!GamesDAOHandler.getGameStatus(gameNameMap).equals("Finished")){
+                            System.out.println("Have beaten the game? [y/n]: ");
+                            String choice = scanner.nextLine();
+                            while (true) {
+                                if (Character.toLowerCase(choice.charAt(0)) == 'y') {
+                                    status = "Finished";
+                                    parsedDateFinish = today;
+                                    break;
+                                } else if (Character.toLowerCase(choice.charAt(0)) == 'n') {
+                                    break;
+                                } else {
+                                    System.out.println("only y or n please: ");
+                                }
                             }
                         }
+
                         System.out.println(gameNameMap);
+                        System.out.println(status);
+                        System.out.println(newTime);
+
                         GamesDAOHandler.updateDB(newTime, status, gameNameMap);
                     } else {
                         if (!dbExists) {
@@ -184,7 +188,7 @@ public class Main {
                                 if (choice.equalsIgnoreCase("y")) {
                                     status = "Finished";
                                     System.out.println("Answer the following questions to help you track your progress: ");
-                                    System.out.println("if you dont remember please leave them blank");
+                                    System.out.println(GREEN_BOLD + "if you dont remember please leave them blank" + RESET);
                                     while (true){
                                         try {
                                             System.out.println("When did you start playing " + GREEN_BOLD + gameNameMap + RESET + "? (yyyy-mm-dd): ");
@@ -192,8 +196,14 @@ public class Main {
 
                                             System.out.println("When did you finish playing " + GREEN_BOLD + gameNameMap + RESET + "? (yyyy-mm-dd): ");
                                             String finishDate = scanner.nextLine();
-                                            parsedDateStart = new Date(formatter.parse(startDate).getTime());
-                                            parsedDateFinish = new Date(formatter.parse(finishDate).getTime());
+                                            if (startDate.isEmpty()) {
+                                                parsedDateStart = null;
+                                            } else if (finishDate.isEmpty()) {
+                                                parsedDateFinish = null;
+                                            }else {
+                                                parsedDateStart = new Date(formatter.parse(startDate).getTime());
+                                                parsedDateFinish = new Date(formatter.parse(finishDate).getTime());
+                                            }
                                             break;
                                         }catch (Exception e){
                                             System.out.println("please enter a valid date");

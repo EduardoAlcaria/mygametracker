@@ -56,4 +56,14 @@ public class GamesDAOHandler {
         return false;
     }
 
+    public static String getGameStatus(String gameName) throws SQLException {
+        if (gameName == null) throw new IllegalArgumentException("gameName is null");
+        try {
+            return GamesDAO.getGameStatus(gameName);
+        }catch (SQLException e){
+            System.out.println(e.getMessage());
+        }
+        return null;
+    }
+
 }
