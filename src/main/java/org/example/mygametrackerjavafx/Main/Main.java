@@ -15,7 +15,6 @@ import java.nio.file.Path;
 
 import java.sql.Date;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -28,7 +27,6 @@ public class Main {
     public static void main(String[] args) throws Exception {
         FolderUserInput.UserCustomPathWriter();
         List<String> validGames = new ArrayList<>();
-        List<Integer> gamesPidArray = new ArrayList<>();
         String userName;
 
         while (true) {
