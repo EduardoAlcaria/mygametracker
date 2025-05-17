@@ -15,6 +15,7 @@ import java.nio.file.Path;
 
 import java.sql.Date;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -26,10 +27,11 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
         FolderUserInput.UserCustomPathWriter();
-
+        List<String> validGames = new ArrayList<>();
+        List<Integer> gamesPidArray = new ArrayList<>();
         String userName;
 
-        while (true){
+        while (true) {
             System.out.println("[1] Login or [2] register account? ");
             int choiceLogin = scanner.nextInt();
             scanner.nextLine();
@@ -44,17 +46,17 @@ public class Main {
                 System.out.println("Password: ");
                 String password = scanner.nextLine();
 
-                if (UserDAOHandler.login(userName, password)){
+                if (UserDAOHandler.login(userName, password)) {
                     System.out.println("login successful");
 
                     break;
-                }else{
+                } else {
                     System.out.println("try again");
                 }
 
 
             }
-            if (choiceLogin == 2){
+            if (choiceLogin == 2) {
                 System.out.println("Register system");
                 System.out.println("----------------------------");
 
@@ -67,10 +69,10 @@ public class Main {
 
                 User user = new User(userName, password);
 
-                if (UserDAOHandler.createAccount(user)){
+                if (UserDAOHandler.createAccount(user)) {
                     System.out.println("account created successfully");
                     break;
-                }else{
+                } else {
                     System.out.println("try again");
                 }
             }
@@ -99,34 +101,54 @@ public class Main {
 
         String genre = "";
 
+        Set<String> seenGameNames = new HashSet<>();
+
         while (true) {
+
             List<ProcessScanner.ProcessInfo> processes = ProcessScanner.getAllProcessPaths();
 
             for (ProcessScanner.ProcessInfo p : processes) {
                 if (!seenPids.contains(p.pid)) {
                     seenPids.add(p.pid);
 
-                    if (ProcessFolderVerifier.matches(Path.of(p.path)) && !gameName.equals(ProcessGameGetter.getGameName(p.path))) {
-                        gameName = ProcessGameGetter.getGameName(p.path);
-                        boolean dbExists = GamesDAOHandler.itExistsInDB(ProcessGameGetter.getGameName(p.path));
-                        if (!dbExists) {
-                            System.out.println(ProcessGameGetter.getGameName(p.path));
-                            System.out.println(GREEN_BOLD + " Game Found: " + gameName + RESET);
-                            System.out.println(GREEN_BOLD + " Path: " + p.path + RESET);
+
+                    if (ProcessFolderVerifier.matches(Path.of(p.path))) {
+                        String foundGame = ProcessGameGetter.getGameName(p.path);
+
+                        if (!seenGameNames.contains(foundGame)) {
+                            gameName = foundGame;
+                            seenGameNames.add(gameName);
+                            validGames.add(gameName);
+
+                            boolean dbExists = GamesDAOHandler.itExistsInDB(ProcessGameGetter.getGameName(p.path));
+                            if (!dbExists) {
+                                System.out.println(GREEN_BOLD + " Game Found: " + gameName + RESET);
+                                System.out.println(GREEN_BOLD + " Path: " + p.path + RESET);
+                            } else {
+                                System.out.println("known game found: " + GREEN_BOLD + gameName + RESET);
+                                System.out.println("EXE: " + GREEN_BOLD + p.name + RESET);
+                                System.out.println(GREEN_BOLD + " Path: " + p.path + RESET);
+                            }
+
                             gamesDB.add(gameName);
-                            gamePid.put(p.pid, gameName);
-                            gameStopWatches.put(p.pid, StopWatch.createStarted());
-                            break;
-                        } else {
-                            System.out.println("known game found: " + GREEN_BOLD + gameName + RESET);
-                            gamePid.put(p.pid, gameName);
+                            if (gamePid.isEmpty()){
+                                gamePid.put(p.pid, gameName);
+                            }else{
+                                System.out.println("there is game running, please close the one that you just opened");
+                                while (true){
+                                    if (!ProcessScanner.isRunning(p.pid)){
+                                        break;
+                                    }
+                                }
+                            }
+
                             gameStopWatches.put(p.pid, StopWatch.createStarted());
                             break;
                         }
                     }
                 }
-
             }
+
             Iterator<Map.Entry<Integer, String>> iterator = gamePid.entrySet().iterator();
             while (iterator.hasNext()) {
                 Map.Entry<Integer, String> entry = iterator.next();
@@ -156,7 +178,7 @@ public class Main {
 
                         System.out.println("old time " + GREEN_BOLD + oldTime + RESET + " new time " + GREEN_BOLD + newTime + RESET);
 
-                        if (!GamesDAOHandler.getGameStatus(gameNameMap).equals("Finished")){
+                        if (!GamesDAOHandler.getGameStatus(gameNameMap).equals("Finished")) {
                             System.out.println("Have beaten the game? [y/n]: ");
                             String choice = scanner.nextLine();
                             while (true) {
@@ -189,7 +211,7 @@ public class Main {
                                     status = "Finished";
                                     System.out.println("Answer the following questions to help you track your progress: ");
                                     System.out.println(GREEN_BOLD + "if you dont remember please leave them blank" + RESET);
-                                    while (true){
+                                    while (true) {
                                         try {
                                             System.out.println("When did you start playing " + GREEN_BOLD + gameNameMap + RESET + "? (yyyy-mm-dd): ");
                                             String startDate = scanner.nextLine();
@@ -200,12 +222,12 @@ public class Main {
                                                 parsedDateStart = null;
                                             } else if (finishDate.isEmpty()) {
                                                 parsedDateFinish = null;
-                                            }else {
+                                            } else {
                                                 parsedDateStart = new Date(formatter.parse(startDate).getTime());
                                                 parsedDateFinish = new Date(formatter.parse(finishDate).getTime());
                                             }
                                             break;
-                                        }catch (Exception e){
+                                        } catch (Exception e) {
                                             System.out.println("please enter a valid date");
                                         }
                                     }

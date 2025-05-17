@@ -10,22 +10,24 @@ public class ProcessScanner {
     public static class ProcessInfo {
         public final int pid;
         public final String path;
+        public final String name;
 
-        public ProcessInfo(int pid, String path) {
+        public ProcessInfo(int pid, String path, String name) {
             this.pid = pid;
             this.path = path;
+            this.name = name;
         }
 
         @Override
         public String toString() {
-            return "PID: " + pid + " | Path: " + path;
+            return "PID: " + pid + " | Path: " + path + " | Name: " + name;
         }
     }
 
     public static List<ProcessInfo> getAllProcessPaths(){
         List<ProcessInfo> processList = new ArrayList<>();
         try {
-            Process process = Runtime.getRuntime().exec("wmic process get ProcessId,ExecutablePath /format:csv");
+            Process process = Runtime.getRuntime().exec("wmic process get Name,ProcessId,ExecutablePath /format:csv");
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
 
             String line;
@@ -36,12 +38,13 @@ public class ProcessScanner {
                     continue;
                 }
 
-                String[] parts = line.split(",", 3);
-                if (parts.length >= 3 && !parts[2].isEmpty()) {
+                String[] parts = line.split(",", 4);
+                if (parts.length >= 4 && !parts[3].isEmpty()) {
                     try {
-                        int pid = Integer.parseInt(parts[2].trim());
+                        String name = parts[2].trim();
                         String path = parts[1].trim();
-                        processList.add(new ProcessInfo(pid, path));
+                        int pid = Integer.parseInt(parts[3].trim());
+                        processList.add(new ProcessInfo(pid, path, name));
                     } catch (NumberFormatException ignored) {
                     }
                 }

@@ -22,37 +22,52 @@ public class FolderUserInput {
         char choice;
         String customPathName;
 
-        while (true) {
-            System.out.println("Do you have a custom game path? [y/n]: ");
-            choice = scanner.next().charAt(0);
-            scanner.nextLine();
+        BufferedReader reader = new BufferedReader(new FileReader(USERCUSTOMPATHFILETXT));
+        String line;
+        File fileToCheck;
 
-            if (Character.toLowerCase(choice) == 'y') {
+        while ((line = reader.readLine()) != null) {
+            fileToCheck = new File(line);
+
+            if (fileToCheck.isDirectory()) {
+                System.out.println("found a custom path: " + line);
+                return true;
+            }else{
                 while (true) {
-                    System.out.println("type the directory: ");
-                    customPathName = scanner.nextLine();
+                    System.out.println("Do you have a custom game path? [y/n]: ");
+                    choice = scanner.next().charAt(0);
+                    scanner.nextLine();
 
-                    File file = new File(customPathName);
+                    if (Character.toLowerCase(choice) == 'y') {
+                        while (true) {
+                            System.out.println("type the directory: ");
+                            customPathName = scanner.nextLine();
 
-                    if (!file.isDirectory()) {
-                        System.out.println("Please type only valid dirs");
-                        continue;
+                            File file = new File(customPathName);
+
+                            if (!file.isDirectory()) {
+                                System.out.println("Please type only valid dirs");
+                                continue;
+                            }
+                            if (file.isDirectory()) {
+                                FileWriter writer = new FileWriter(USERCUSTOMPATHFILETXT, false);
+                                writer.write(customPathName);
+                                writer.close();
+                                return true;
+                            }
+                        }
+
                     }
-                    if (file.isDirectory()) {
-                        FileWriter writer = new FileWriter(USERCUSTOMPATHFILETXT, false);
-                        writer.write(customPathName);
-                        writer.close();
-                        return true;
+
+                    if (Character.toLowerCase(choice) == 'n') {
+                        System.out.println("following the program without a custom path");
+                        return false;
                     }
+                    System.out.println("invalid option, please type only y or n:");
                 }
-
             }
 
-            if (Character.toLowerCase(choice) == 'n') {
-                System.out.println("following the program without a custom path");
-                return false;
-            }
-            System.out.println("invalid option, please type only y or n:");
         }
+        return false;
     }
 }
