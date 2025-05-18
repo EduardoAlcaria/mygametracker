@@ -64,18 +64,18 @@ public class Main {
         String gameName = "";
         String genre = "";
 
+        List<Integer> pidsList = new ArrayList<>();
+        String currentGame;
+
 
         while (true) {
-
             List<ProcessScanner.ProcessInfo> processes = ProcessScanner.getAllProcessPaths();
-            List<Integer> pidsList = new ArrayList<>();
-            String currentGame;
-            int currentPid;
+
             for (ProcessScanner.ProcessInfo p : processes) {
                 if (!seenPids.contains(p.pid)) {
                     seenPids.add(p.pid);
 
-
+                    System.out.println("checking....");
                     if (ProcessFolderVerifier.matches(Path.of(p.path))) {
                         String foundGame = ProcessGameGetter.getGameName(p.path);
 
@@ -88,42 +88,48 @@ public class Main {
                             if (!dbExists) {
                                 System.out.println(GREEN_BOLD + " Game Found: " + gameName + RESET);
                                 System.out.println(GREEN_BOLD + " Path: " + p.path + RESET);
+                                System.out.println("PID: " + GREEN_BOLD + p.pid + RESET);
                             } else {
                                 System.out.println("known game found: " + GREEN_BOLD + gameName + RESET);
                                 System.out.println("EXE: " + GREEN_BOLD + p.name + RESET);
+                                System.out.println("PID: " + GREEN_BOLD + p.pid + RESET);
                                 System.out.println(GREEN_BOLD + " Path: " + p.path + RESET);
                             }
 
 
                             gamesDB.add(gameName);
-                            currentGame = gameName;
+
 
                             if (gamePid.isEmpty()) {
                                 gamePid.put(p.pid, gameName);
                                 pidsList.add(p.pid);
                                 currentGame = gameName;
+                                gameStopWatches.put(p.pid, StopWatch.createStarted());
                             } else {
                                 pidsList.add(p.pid);
                                 System.out.println("there is another gaming running, please close the one that you just opened");
                                 while (true) {
-                                    if (!ProcessScanner.isRunning(p.pid)) {
+
+                                    boolean oldGameIsRunning = ProcessScanner.isRunning(pidsList.getFirst());
+                                    boolean newGameIsRunning = ProcessScanner.isRunning(p.pid);
+
+                                    if (!newGameIsRunning) {
                                         System.out.println("the new one has been closed");
                                         break;
                                     }
-                                    if (!pidsList.isEmpty() && !ProcessScanner.isRunning(pidsList.getFirst())) {
-                                        Integer oldPid = pidsList.removeFirst();
-                                        String oldGameName = gamePid.remove(oldPid);
-                                        gamePid.put(p.pid, oldGameName);
-                                        currentGame = oldGameName;
-
+                                    if (!oldGameIsRunning) {
+                                        System.out.println("the old one has been closed");
+                                        currentGame = gameName;
+                                        gamePid.remove(pidsList.getFirst());
+                                        gamePid.put(p.pid, gameName);
+                                        gameStopWatches.remove(pidsList.getFirst());
+                                        gameStopWatches.put(p.pid, StopWatch.createStarted());
                                         System.out.println("Switched to: " + currentGame);
                                         break;
                                     }
                                 }
                             }
 
-                            gameStopWatches.put(p.pid, StopWatch.createStarted());
-                            break;
                         }
                     }
                 }
@@ -133,11 +139,12 @@ public class Main {
             while (iterator.hasNext()) {
                 Map.Entry<Integer, String> entry = iterator.next();
                 int pid = entry.getKey();
+                System.out.println("PID: " + GREEN_BOLD + pid + RESET);
                 String gameNameMap = entry.getValue();
 
                 boolean isRunning = ProcessScanner.isRunning(pid);
 
-                String status = "playing";
+                String status = "";
                 if (!isRunning) {
                     StopWatch sw = gameStopWatches.get(pid);
                     if (sw != null && sw.isStarted()) {
@@ -166,9 +173,9 @@ public class Main {
                             while (true) {
                                 if (Character.toLowerCase(choice.charAt(0)) == 'y') {
                                     status = "Finished";
-                                    parsedDateFinish = today;
                                     break;
                                 } else if (Character.toLowerCase(choice.charAt(0)) == 'n') {
+                                    status = "Playing";
                                     break;
                                 } else {
                                     System.out.println("only y or n please: ");
@@ -181,6 +188,7 @@ public class Main {
                         System.out.println(newTime);
 
                         GamesDAOHandler.updateDB(newTime, status, gameNameMap);
+
                     } else {
                         System.out.println(GREEN_BOLD + gameNameMap + " Genre? " + RESET);
                         genre = scanner.nextLine();
@@ -233,6 +241,9 @@ public class Main {
                     }
                     iterator.remove();
                     seenPids.remove(pid);
+                    seenGameNames.remove(gameNameMap);
+                    validGames.remove(gameNameMap);
+
                 }
 
             }

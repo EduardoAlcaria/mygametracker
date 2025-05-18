@@ -3,12 +3,16 @@ package org.example.mygametrackerjavafx.connectionDAO;
 import org.example.mygametrackerjavafx.Model.Game;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.example.mygametrackerjavafx.connectionDAO.ConnectionDAO.getConnection;
 
 public class GamesDAO {
+    private static LocalDate now = LocalDate.now();
+    private static Date today = Date.valueOf(now);
+
     protected static void insert(Game game) {
         String sql = "INSERT INTO games (game_title, game_genre, game_status, start_playing_on, finished_playing_on, time_spent, user_id) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?)";
@@ -62,17 +66,20 @@ public class GamesDAO {
 
     protected static void updateDB(Long timeUpdated, String gameStatus, String gameName) throws SQLException {
 
-        String sqlUpdate = "UPDATE games SET time_spent = ?, game_status = ? WHERE game_title = ? AND user_id = ?";
-
+        String sqlUpdate = "UPDATE games SET time_spent = ?, game_status = ?, finished_playing_on = ? WHERE game_title = ? AND user_id = ?";
 
         try (Connection conn = ConnectionDAO.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sqlUpdate)) {
 
-
             stmt.setLong(1, timeUpdated);
             stmt.setString(2, gameStatus);
-            stmt.setString(3, gameName);
-            stmt.setInt(4, Game.getUserID());
+            if (gameStatus.equals("Finished")){
+                stmt.setDate(3, today);
+            }else{
+                stmt.setDate(3, null);
+            }
+            stmt.setString(4, gameName);
+            stmt.setInt(5, Game.getUserID());
 
             int rowsUpdated = stmt.executeUpdate();
             if (rowsUpdated > 0) {

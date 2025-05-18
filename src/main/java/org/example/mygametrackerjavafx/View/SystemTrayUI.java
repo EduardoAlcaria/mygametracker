@@ -18,11 +18,12 @@ public class SystemTrayUI {
     private static MenuItem logoutButton = new MenuItem("Logout");
     private static final String credentialsPath = "D:\\programming_WINDOWS_ONLY\\projects\\java\\mygametracker\\src\\main\\java\\org\\example\\mygametrackerjavafx\\View\\credentials.txt";
     private static final File file = new File(credentialsPath);
+    private static boolean userLogOut = false;
 
     public static String getCurrentUser() throws Exception {
         if (isRemembered()){
             currentUser = loadLoginLocally()[0];
-            System.out.println(currentUser);
+            updateLogInLabel();
         }
         return currentUser;
     }
@@ -96,6 +97,7 @@ public class SystemTrayUI {
 
         loginMenu.add(loginButton);
         loginMenu.add(registerButton);
+        loginMenu.add(exitItem);
 
         popup.add(loginMenu);
     }
@@ -131,7 +133,7 @@ public class SystemTrayUI {
     }
 
     private static String[] inputHandler() throws Exception {
-        if (file.exists() && file.length() == 0) {
+        if (!isRemembered() || userLogOut) {
             JPanel panel = new JPanel(new GridBagLayout());
             GridBagConstraints cs = new GridBagConstraints();
 
@@ -185,19 +187,26 @@ public class SystemTrayUI {
         return null;
     }
 
-    private static void logOut() {
+    private static void logOut() throws Exception {
         currentUser = null;
         loginMenu.setLabel("Login");
-        loginMenu.remove(0);
+        loginMenu.removeAll();
+        userLogOut = true;
         buttons();
     }
 
     private static void updateLogInLabel() {
         if (currentUser != null) {
-            loginMenu.setLabel("User " + currentUser);
+            loginMenu.setLabel(currentUser);
             loginMenu.removeAll();
-            logoutButton.addActionListener(e -> logOut());
             loginMenu.add(logoutButton);
+            logoutButton.addActionListener(e -> {
+                try {
+                    logOut();
+                } catch (Exception ex) {
+                    throw new RuntimeException(ex);
+                }
+            });
         }
     }
 
