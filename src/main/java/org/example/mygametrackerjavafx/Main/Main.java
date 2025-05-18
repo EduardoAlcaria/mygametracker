@@ -3,10 +3,10 @@ package org.example.mygametrackerjavafx.Main;
 import org.apache.commons.lang3.time.StopWatch;
 import org.example.mygametrackerjavafx.FolderFinder.FolderUserInput;
 import org.example.mygametrackerjavafx.Model.Game;
-import org.example.mygametrackerjavafx.Model.User;
 import org.example.mygametrackerjavafx.ProcessTracker.ProcessFolderVerifier;
 import org.example.mygametrackerjavafx.ProcessTracker.ProcessGameGetter;
 import org.example.mygametrackerjavafx.ProcessTracker.ProcessScanner;
+import org.example.mygametrackerjavafx.View.SystemTrayUI;
 import org.example.mygametrackerjavafx.connectionDAO.GamesDAOHandler;
 import org.example.mygametrackerjavafx.connectionDAO.UserDAOHandler;
 
@@ -25,86 +25,52 @@ public class Main {
     private static final Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) throws Exception {
-        FolderUserInput.UserCustomPathWriter();
-        List<String> validGames = new ArrayList<>();
-        String userName;
+        SystemTrayUI.startUI();
 
-        while (true) {
-            System.out.println("[1] Login or [2] register account? ");
-            int choiceLogin = scanner.nextInt();
-            scanner.nextLine();
-            if (choiceLogin == 1) {
-                System.out.println("Login system");
-                System.out.println("----------------------------");
-
-                System.out.println("User name: ");
-                userName = scanner.nextLine();
-
-
-                System.out.println("Password: ");
-                String password = scanner.nextLine();
-
-                if (UserDAOHandler.login(userName, password)) {
-                    System.out.println("login successful");
-
-                    break;
-                } else {
-                    System.out.println("try again");
-                }
-
-
-            }
-            if (choiceLogin == 2) {
-                System.out.println("Register system");
-                System.out.println("----------------------------");
-
-                System.out.println("Register User name: ");
-                userName = scanner.nextLine();
-
-                System.out.println("Register Password: ");
-
-                String password = scanner.nextLine();
-
-                User user = new User(userName, password);
-
-                if (UserDAOHandler.createAccount(user)) {
-                    System.out.println("account created successfully");
-                    break;
-                } else {
-                    System.out.println("try again");
-                }
+        if (!SystemTrayUI.isRemembered()) {
+            while (SystemTrayUI.getCurrentUser() == null) {
+                System.out.println("Pleace log in");
+                Thread.sleep(3000);
             }
         }
+        System.out.println(SystemTrayUI.getCurrentUser());
 
-        Game.setUserID(UserDAOHandler.getUserID(userName));
-        System.out.println("User ID: " + Game.getUserID());
+        int userID = UserDAOHandler.getUserID(SystemTrayUI.getCurrentUser());
+        Game.setUserID(userID);
+        FolderUserInput.UserCustomPathWriter();
+
 
         final String GREEN_BOLD = "\033[1;32m";
         final String RESET = "\033[0m";
 
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
-        Set<Integer> seenPids = new HashSet<>();
-        Map<Integer, StopWatch> gameStopWatches = new HashMap<>();
-        Map<Integer, String> gamePid = new HashMap<>();
-
         LocalDate now = LocalDate.now();
 
         Date today = Date.valueOf(now);
 
-        String gameName = "";
-
         Date parsedDateStart = null;
         Date parsedDateFinish = null;
 
+        List<String> validGames = new ArrayList<>();
+
+        Set<Integer> seenPids = new HashSet<>();
+        Set<String> seenGameNames = new HashSet<>();
+
+        Map<Integer, StopWatch> gameStopWatches = new HashMap<>();
+        Map<Integer, String> gamePid = new HashMap<>();
+
+
+        String gameName = "";
         String genre = "";
 
-        Set<String> seenGameNames = new HashSet<>();
 
         while (true) {
 
             List<ProcessScanner.ProcessInfo> processes = ProcessScanner.getAllProcessPaths();
-
+            List<Integer> pidsList = new ArrayList<>();
+            String currentGame;
+            int currentPid;
             for (ProcessScanner.ProcessInfo p : processes) {
                 if (!seenPids.contains(p.pid)) {
                     seenPids.add(p.pid);
@@ -128,13 +94,29 @@ public class Main {
                                 System.out.println(GREEN_BOLD + " Path: " + p.path + RESET);
                             }
 
+
                             gamesDB.add(gameName);
-                            if (gamePid.isEmpty()){
+                            currentGame = gameName;
+
+                            if (gamePid.isEmpty()) {
                                 gamePid.put(p.pid, gameName);
-                            }else{
-                                System.out.println("there is game running, please close the one that you just opened");
-                                while (true){
-                                    if (!ProcessScanner.isRunning(p.pid)){
+                                pidsList.add(p.pid);
+                                currentGame = gameName;
+                            } else {
+                                pidsList.add(p.pid);
+                                System.out.println("there is another gaming running, please close the one that you just opened");
+                                while (true) {
+                                    if (!ProcessScanner.isRunning(p.pid)) {
+                                        System.out.println("the new one has been closed");
+                                        break;
+                                    }
+                                    if (!pidsList.isEmpty() && !ProcessScanner.isRunning(pidsList.getFirst())) {
+                                        Integer oldPid = pidsList.removeFirst();
+                                        String oldGameName = gamePid.remove(oldPid);
+                                        gamePid.put(p.pid, oldGameName);
+                                        currentGame = oldGameName;
+
+                                        System.out.println("Switched to: " + currentGame);
                                         break;
                                     }
                                 }
@@ -169,6 +151,8 @@ public class Main {
 
                     boolean dbExists = GamesDAOHandler.itExistsInDB(gameNameMap);
 
+                    System.out.println(dbExists);
+
                     if (dbExists) {
                         long oldTime = GamesDAOHandler.getTotalTimeSpent(gameNameMap);
 
@@ -198,55 +182,53 @@ public class Main {
 
                         GamesDAOHandler.updateDB(newTime, status, gameNameMap);
                     } else {
-                        if (!dbExists) {
-                            System.out.println(GREEN_BOLD + gameNameMap + " Genre? " + RESET);
-                            genre = scanner.nextLine();
+                        System.out.println(GREEN_BOLD + gameNameMap + " Genre? " + RESET);
+                        genre = scanner.nextLine();
 
-                            System.out.println("You are registering " + GREEN_BOLD + gameNameMap + RESET + " as part of your beaten game collection? [y/n] ");
-                            String choice = scanner.nextLine();
-                            while (true) {
-                                if (choice.equalsIgnoreCase("y")) {
-                                    status = "Finished";
-                                    System.out.println("Answer the following questions to help you track your progress: ");
-                                    System.out.println(GREEN_BOLD + "if you dont remember please leave them blank" + RESET);
-                                    while (true) {
-                                        try {
-                                            System.out.println("When did you start playing " + GREEN_BOLD + gameNameMap + RESET + "? (yyyy-mm-dd): ");
-                                            String startDate = scanner.nextLine();
+                        System.out.println("You are registering " + GREEN_BOLD + gameNameMap + RESET + " as part of your beaten game collection? [y/n] ");
+                        String choice = scanner.nextLine();
+                        while (true) {
+                            if (choice.equalsIgnoreCase("y")) {
+                                status = "Finished";
+                                System.out.println("Answer the following questions to help you track your progress: ");
+                                System.out.println(GREEN_BOLD + "if you dont remember please leave them blank" + RESET);
+                                while (true) {
+                                    try {
+                                        System.out.println("When did you start playing " + GREEN_BOLD + gameNameMap + RESET + "? (yyyy-mm-dd): ");
+                                        String startDate = scanner.nextLine();
 
-                                            System.out.println("When did you finish playing " + GREEN_BOLD + gameNameMap + RESET + "? (yyyy-mm-dd): ");
-                                            String finishDate = scanner.nextLine();
-                                            if (startDate.isEmpty()) {
-                                                parsedDateStart = null;
-                                            } else if (finishDate.isEmpty()) {
-                                                parsedDateFinish = null;
-                                            } else {
-                                                parsedDateStart = new Date(formatter.parse(startDate).getTime());
-                                                parsedDateFinish = new Date(formatter.parse(finishDate).getTime());
-                                            }
-                                            break;
-                                        } catch (Exception e) {
-                                            System.out.println("please enter a valid date");
+                                        System.out.println("When did you finish playing " + GREEN_BOLD + gameNameMap + RESET + "? (yyyy-mm-dd): ");
+                                        String finishDate = scanner.nextLine();
+                                        if (startDate.isEmpty()) {
+                                            parsedDateStart = null;
+                                        } else if (finishDate.isEmpty()) {
+                                            parsedDateFinish = null;
+                                        } else {
+                                            parsedDateStart = new Date(formatter.parse(startDate).getTime());
+                                            parsedDateFinish = new Date(formatter.parse(finishDate).getTime());
                                         }
+                                        break;
+                                    } catch (Exception e) {
+                                        System.out.println("please enter a valid date");
                                     }
-
-                                    Game game = new Game(gameNameMap, genre, status, parsedDateStart, parsedDateFinish, sessionTime, Game.getUserID());
-                                    GamesDAOHandler.insert(game);
-                                    break;
                                 }
-                                if (choice.equalsIgnoreCase("n")) {
 
-                                    parsedDateStart = today;
-                                    parsedDateFinish = null;
-
-                                    Game game = new Game(gameNameMap, genre, status, parsedDateStart, parsedDateFinish, sessionTime, Game.getUserID());
-
-                                    GamesDAOHandler.insert(game);
-                                    break;
-
-                                }
-                                System.out.println("only y or n please: ");
+                                Game game = new Game(gameNameMap, genre, status, parsedDateStart, parsedDateFinish, sessionTime, Game.getUserID());
+                                GamesDAOHandler.insert(game);
+                                break;
                             }
+                            if (choice.equalsIgnoreCase("n")) {
+
+                                parsedDateStart = today;
+                                parsedDateFinish = null;
+
+                                Game game = new Game(gameNameMap, genre, status, parsedDateStart, parsedDateFinish, sessionTime, Game.getUserID());
+
+                                GamesDAOHandler.insert(game);
+                                break;
+
+                            }
+                            System.out.println("only y or n please: ");
                         }
                     }
                     iterator.remove();

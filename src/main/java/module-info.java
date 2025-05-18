@@ -19,6 +19,7 @@ module org.example.mygametrackerjavafx {
     requires junit;
     requires org.junit.jupiter.api;
     requires jbcrypt;
+    requires com.formdev.flatlaf;
 
     opens org.example.mygametrackerjavafx to javafx.fxml;
     exports org.example.mygametrackerjavafx.View;
