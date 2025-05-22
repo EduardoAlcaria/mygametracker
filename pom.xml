@@ -10,8 +10,6 @@
     <name>myGameTrackerJavaFX</name>
 
 
-
-
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <junit.version>5.10.2</junit.version>
@@ -140,6 +138,7 @@
             <version>4.10</version>
             <scope>compile</scope>
         </dependency>
+        <!-- Fix the JUnit Jupiter API dependency by removing the 'O' character -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
@@ -152,7 +151,6 @@
             <version>3.6</version>
             <scope>runtime</scope>
         </dependency>
-
     </dependencies>
 
     <build>
@@ -175,7 +173,7 @@
                         <id>default-cli</id>
                         <configuration>
                             <mainClass>
-                                org.example.mygametrackerjavafx/org.example.mygametrackerjavafx.main;
+                                org.example.mygametrackerjavafx/org.example.mygametrackerjavafx.main
                             </mainClass>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>
