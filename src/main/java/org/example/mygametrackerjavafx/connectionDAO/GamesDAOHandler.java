@@ -1,6 +1,6 @@
 package org.example.mygametrackerjavafx.connectionDAO;
 
-import org.example.mygametrackerjavafx.Model.Game;
+import org.example.mygametrackerjavafx.model.Game;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -15,13 +15,17 @@ public class GamesDAOHandler {
         try {
             GamesDAO.insert(game);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            throw new Exception("failed to insert the game into the database" + e);
         }
     }
 
 
     public static List<Game> getAllGames() throws SQLException {
-        return GamesDAO.getAllGames();
+        try {
+            return GamesDAO.getAllGames();
+        }catch (SQLException e){
+            throw new SQLException("failed to get all games from the database" + e);
+        }
     }
 
     public static Long getTotalTimeSpent(String gameName) throws SQLException {
@@ -29,17 +33,18 @@ public class GamesDAOHandler {
         try {
             return GamesDAO.getTotalTimeSpent(gameName);
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            throw new SQLException("failed to get the total time spent in the database" + e);
         }
-        return null;
     }
 
     public static void updateDB(Long timeUpdated, String gameStatus, String gameName) throws SQLException {
         System.out.println("updating the database with the new game data ...");
         if (gameName == null || gameStatus == null || timeUpdated == null) {
-            throw new IllegalArgumentException("gameName is null");
-        } else {
+            throw new IllegalArgumentException("game name, game status or time updated is null");
+        }try {
             GamesDAO.updateDB(timeUpdated, gameStatus, gameName);
+        }catch (SQLException e){
+            throw new SQLException("failed to update the database" + e);
         }
     }
 
@@ -61,9 +66,8 @@ public class GamesDAOHandler {
         try {
             return GamesDAO.getGameStatus(gameName);
         }catch (SQLException e){
-            System.out.println(e.getMessage());
+            throw new SQLException("failed to get the game status from the database" + e);
         }
-        return null;
     }
 
 }

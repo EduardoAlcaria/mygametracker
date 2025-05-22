@@ -1,6 +1,6 @@
-package org.example.mygametrackerjavafx.ProcessTracker;
+package org.example.mygametrackerjavafx.processtracker;
 
-import org.example.mygametrackerjavafx.FolderFinder.FixedFoldersLister;
+import org.example.mygametrackerjavafx.folderfinder.FixedFoldersLister;
 
 import java.nio.file.Path;
 

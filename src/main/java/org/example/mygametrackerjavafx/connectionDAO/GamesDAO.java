@@ -1,6 +1,6 @@
 package org.example.mygametrackerjavafx.connectionDAO;
 
-import org.example.mygametrackerjavafx.Model.Game;
+import org.example.mygametrackerjavafx.model.Game;
 
 import java.sql.*;
 import java.time.LocalDate;

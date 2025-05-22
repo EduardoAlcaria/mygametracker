@@ -1,4 +1,4 @@
-package org.example.mygametrackerjavafx.ProcessTracker;
+package org.example.mygametrackerjavafx.processtracker;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;

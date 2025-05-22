@@ -1,4 +1,4 @@
-package org.example.mygametrackerjavafx.Model;
+package org.example.mygametrackerjavafx.model;
 
 public class User {
     private String name;

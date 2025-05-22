@@ -1,4 +1,4 @@
-package org.example.mygametrackerjavafx.ProcessTracker;
+package org.example.mygametrackerjavafx.processtracker;
 
 import java.io.BufferedReader;
 import java.io.IOException;

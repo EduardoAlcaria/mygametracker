@@ -1,4 +1,4 @@
-package org.example.mygametrackerjavafx.FolderFinder;
+package org.example.mygametrackerjavafx.folderfinder;
 
 import java.io.*;
 import java.util.Scanner;

@@ -1,6 +1,6 @@
 package org.example.mygametrackerjavafx.connectionDAO;
 
-import org.example.mygametrackerjavafx.Model.User;
+import org.example.mygametrackerjavafx.model.User;
 
 public class UserDAOHandler {
     public static boolean createAccount(User user) throws Exception {

@@ -1,7 +1,7 @@
-package org.example.mygametrackerjavafx.View;
+package org.example.mygametrackerjavafx.view;
 
 import com.formdev.flatlaf.FlatDarkLaf;
-import org.example.mygametrackerjavafx.Model.User;
+import org.example.mygametrackerjavafx.model.User;
 import org.example.mygametrackerjavafx.connectionDAO.UserDAOHandler;
 import org.mindrot.jbcrypt.BCrypt;
 
@@ -16,9 +16,14 @@ public class SystemTrayUI {
     private static final Menu loginMenu = new Menu("Login");
     private static String currentUser;
     private static MenuItem logoutButton = new MenuItem("Logout");
-    private static final String credentialsPath = "D:\\programming_WINDOWS_ONLY\\projects\\java\\mygametracker\\src\\main\\java\\org\\example\\mygametrackerjavafx\\View\\credentials.txt";
+    private static final String credentialsPath = "credentials.txt";
     private static final File file = new File(credentialsPath);
     private static boolean userLogOut = false;
+
+    private enum currentPage{
+        REGISTER,
+        LOGIN
+    }
 
     public static String getCurrentUser() throws Exception {
         if (isRemembered()){
@@ -42,10 +47,13 @@ public class SystemTrayUI {
             return;
         }
 
+        if (!isRemembered()) {
+            loginHandler();
+        }
 
         buttons();
 
-        String imagePath = "D:\\programming_WINDOWS_ONLY\\projects\\java\\mygametracker\\src\\main\\java\\org\\example\\mygametrackerjavafx\\View\\donut_pixel_art_16x16.png";
+        String imagePath = "donut_pixel_art_16x16.png";
         Image image = Toolkit.getDefaultToolkit().getImage(imagePath);
 
 
@@ -104,7 +112,7 @@ public class SystemTrayUI {
 
     private static void loginHandler() throws Exception {
 
-        String[] input = inputHandler();
+        String[] input = inputHandler(currentPage.LOGIN);
         if (input == null) return;
 
         if (UserDAOHandler.login(input[0], input[1])) {
@@ -118,7 +126,7 @@ public class SystemTrayUI {
     }
 
     private static void registerHandler() throws Exception {
-        String[] input = inputHandler();
+        String[] input = inputHandler(currentPage.REGISTER);
         if (input == null) return;
 
         User user = new User(input[0], input[1]);
@@ -132,20 +140,20 @@ public class SystemTrayUI {
 
     }
 
-    private static String[] inputHandler() throws Exception {
+    private static String[] inputHandler(currentPage page) throws Exception {
         if (!isRemembered() || userLogOut) {
             JPanel panel = new JPanel(new GridBagLayout());
             GridBagConstraints cs = new GridBagConstraints();
 
             cs.fill = GridBagConstraints.HORIZONTAL;
-            cs.insets = new Insets(10, 10, 10, 10); // More padding
+            cs.insets = new Insets(10, 10, 10, 10);
+
 
             JTextField userField = new JTextField(15);
             JPasswordField passField = new JPasswordField(15);
 
             JCheckBox rememberMe = new JCheckBox("Remember me");
 
-            // Labels
             cs.gridx = 0;
             cs.gridy = 0;
             panel.add(new JLabel("Username:"), cs);
@@ -163,10 +171,15 @@ public class SystemTrayUI {
             cs.gridx = 0;
             cs.gridy = 2;
 
-            panel.add(rememberMe, cs);
-
-            int result = JOptionPane.showConfirmDialog(null, panel, "🔐 Login/Register",
-                    JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+            int result;
+            if (page == currentPage.LOGIN){
+                panel.add(rememberMe, cs);
+                result = JOptionPane.showConfirmDialog(null, panel, "🔐 Login",
+                        JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+            }else{
+                result = JOptionPane.showConfirmDialog(null, panel, "🔐 Register",
+                        JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+            }
 
             if (result == JOptionPane.OK_OPTION) {
                 String username = userField.getText().trim();
@@ -174,7 +187,7 @@ public class SystemTrayUI {
 
                 if (username.isEmpty() || password.isEmpty()) {
                     JOptionPane.showMessageDialog(null, "Username and password cannot be empty", "Error", JOptionPane.ERROR_MESSAGE);
-                    return inputHandler();
+                    return inputHandler(page);
                 }
 
                 if (rememberMe.isSelected()) {
