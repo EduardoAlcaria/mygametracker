@@ -5,9 +5,9 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class ConnectionDAO {
-    private static final String url = "jdbc:mysql://root:fnXJaDfEaTXCBVScTJSMTEOAFnsNjDGA@mainline.proxy.rlwy.net:17069/railway";
-    private static final String user = "root";
-    private static final String password = "fnXJaDfEaTXCBVScTJSMTEOAFnsNjDGA";
+    private static final String url = "";
+    private static final String user = "";
+    private static final String password = "";
 
     public static Connection getConnection() throws SQLException {
         try {
