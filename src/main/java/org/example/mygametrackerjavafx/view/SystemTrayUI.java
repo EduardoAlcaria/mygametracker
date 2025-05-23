@@ -109,8 +109,29 @@ public class SystemTrayUI {
 
         popup.add(loginMenu);
     }
+    public static void showLoginDialogImmediately() {
+        SwingUtilities.invokeLater(() -> {
+            try {
+                String[] input = inputHandler(currentPage.LOGIN);
+                if (input != null) {
+                    if (UserDAOHandler.login(input[0], input[1])) {
+                        currentUser = input[0];
+                        JOptionPane.showMessageDialog(null, "Login successful");
+                        updateLogInLabel();
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Wrong username or password");
+                    }
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(null,
+                        "Error showing login dialog: " + ex.getMessage(),
+                        "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+    }
 
-    private static void loginHandler() throws Exception {
+    public static void loginHandler() throws Exception {
 
         String[] input = inputHandler(currentPage.LOGIN);
         if (input == null) return;

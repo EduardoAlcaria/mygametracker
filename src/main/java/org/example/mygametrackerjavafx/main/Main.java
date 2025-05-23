@@ -24,15 +24,36 @@ public class Main {
 
     public static final String STATUS_FINISHED = "Finished";
     public static final String STATUS_PLAYING = "Playing";
-
+    public static final String GREEN_BOLD = "\033[1;32m";
+    public static final String RESET = "\033[0m";
     private static final Scanner SCANNER = new Scanner(System.in);
 
     public static void main(String[] args) throws Exception {
+        FolderUserInput.UserCustomPathWriter();
 
-        initializeConfigs();
+        SystemTrayUI.startUI();
 
-        final String GREEN_BOLD = "\033[1;32m";
-        final String RESET = "\033[0m";
+        if (!SystemTrayUI.isRemembered()) {
+            System.out.println("Please log in");
+
+            int timeoutSeconds = 60;
+            for (int i = 0; i < timeoutSeconds; i++) {
+                if (SystemTrayUI.getCurrentUser() != null) {
+                    break;
+                }
+                Thread.sleep(1000);
+            }
+
+            if (SystemTrayUI.getCurrentUser() == null) {
+                System.out.println("Login timeout. Please restart the application.");
+                return;
+            }
+        }
+
+        System.out.println("Logged in as: " + SystemTrayUI.getCurrentUser());
+
+        int userID = UserDAOHandler.getUserID(SystemTrayUI.getCurrentUser());
+        Game.setUserID(userID);
 
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -272,22 +293,5 @@ public class Main {
         return date;
     }
 
-    public static void initializeConfigs() throws Exception {
-        SystemTrayUI.startUI();
-
-        if (!SystemTrayUI.isRemembered()) {
-            System.out.println("Please log in");
-            while (SystemTrayUI.getCurrentUser() == null) {
-                Thread.sleep(3000);
-            }
-        }
-        System.out.println(SystemTrayUI.getCurrentUser());
-
-        int userID = UserDAOHandler.getUserID(SystemTrayUI.getCurrentUser());
-
-        Game.setUserID(userID);
-
-        FolderUserInput.UserCustomPathWriter();
-    }
 
 }
