@@ -1,4 +1,4 @@
-# 🎮 GamePlay Tracker (Beta)
+# 🎮 MyGameTracker (Beta)
 
 A Java-based desktop application designed to **track your gameplay time automatically**.  
 Currently in **beta**, it features a hybrid setup: a **CLI-driven workflow combined with System Tray interactions**, focused on background automation rather than visual interfaces.
