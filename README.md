@@ -41,8 +41,9 @@ This app is being developed as a **personal project** to strengthen skills in:
 2. Make sure you have:
    - JDK 17 or newer
    - MySQL running and credentials set up
-3. Run `Main.java`
-4. Use terminal + system tray to interact with the app
+3. Make sure to run the file as Adm, otherwise the program will not work as it should
+4. Run `Main.java`
+5. Use terminal + system tray to interact with the app
 
 ⚠️ Default database credentials can be edited in `ConnectionDAO.java`.
 
